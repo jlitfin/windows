@@ -27,6 +27,10 @@ namespace DeveloperUtilityWin
         private frmDisplayResult __tableCompare;
 
 
+        private Dictionary<string, List<string>> __leftSchema;
+        private Dictionary<string, List<string>> __rightSchema;
+
+
         public frmMain()
         {
             InitializeComponent();
@@ -66,6 +70,12 @@ namespace DeveloperUtilityWin
             }
 
             this.txtInputSet.Text = replace.ToString();
+
+            if (this.chkAuto.Checked && Lines != null && Lines.Count > 0)
+            {
+                this.txtPrimaryKeyField.Text = __xform.CamelCase(Lines[0].Substring(1, Lines[0].IndexOf(' ') - 1));
+            }
+            
         }
 
         private void txtTableName_TextChanged(object sender, EventArgs e)
@@ -112,11 +122,19 @@ namespace DeveloperUtilityWin
                 sb.Append("dbo.prc_");
                 sb.Append(__xform.SQLCase(txtClassName.Text));
                 this.txtProcName.Text = sb.ToString();
+
+                if (Lines != null && Lines.Count > 0)
+                {
+                    this.txtPrimaryKeyField.Text = __xform.CamelCase(Lines[0].Substring(1, Lines[0].IndexOf(' ') - 1));
+                }
+
             }
         }
 
         private void btnCreateStandardClass_Click(object sender, EventArgs e)
         {
+            allEvent();
+
             if (__standardClass != null)
             {
                 __standardClass.Visible = false;
@@ -132,6 +150,8 @@ namespace DeveloperUtilityWin
 
         private void btnStandardRepository_Click(object sender, EventArgs e)
         {
+            allEvent();
+
             if (__standardRepository != null)
             {
                 __standardRepository.Visible = false;
@@ -146,6 +166,8 @@ namespace DeveloperUtilityWin
 
         private void btnEdsClass_Click(object sender, EventArgs e)
         {
+            allEvent();
+
             if (__edsClass != null)
             {
                 __edsClass.Visible = false;
@@ -160,6 +182,8 @@ namespace DeveloperUtilityWin
 
         private void btnEdsSelect_Click(object sender, EventArgs e)
         {
+            allEvent();
+
             if (__edsSelect != null)
             {
                 __edsSelect.Visible = false;
@@ -174,6 +198,8 @@ namespace DeveloperUtilityWin
 
         private void btnEdsInsert_Click(object sender, EventArgs e)
         {
+            allEvent();
+
             if (__edsInsert != null)
             {
                 __edsInsert.Visible = false;
@@ -200,6 +226,8 @@ namespace DeveloperUtilityWin
 
         private void btnStandardSelect_Click(object sender, EventArgs e)
         {
+            allEvent();
+
             if (__standardSelect != null)
             {
                 __standardSelect.Visible = false;
@@ -214,6 +242,8 @@ namespace DeveloperUtilityWin
 
         private void btnStandardInsert_Click(object sender, EventArgs e)
         {
+            allEvent();
+
             if (__standardInsert != null)
             {
                 __standardInsert.Visible = false;
@@ -228,6 +258,8 @@ namespace DeveloperUtilityWin
 
         private void btnStandardUpdate_Click(object sender, EventArgs e)
         {
+            allEvent();
+
             if (__standardUpdate != null)
             {
                 __standardUpdate.Visible = false;
@@ -242,6 +274,32 @@ namespace DeveloperUtilityWin
 
         private void frmMain_Load(object sender, EventArgs e)
         {
+            try
+            {
+                //
+                // DB COMPARE TAB
+                //
+                //
+                // check to see if we have left / right defined
+                //
+                this.lblDbLeftDescription.Text = System.Configuration.ConfigurationManager.ConnectionStrings["db_left"].ToString();
+                this.lblDbRightDescription.Text = System.Configuration.ConfigurationManager.ConnectionStrings["db_right"].ToString();
+
+                __leftSchema = UtilityDataAccess.LeftSchema;
+                __rightSchema = UtilityDataAccess.RightSchema;
+
+                foreach (KeyValuePair<string, List<string>> kv in __leftSchema)
+                {
+                    this.lbTableList.Items.Add(kv.Key);
+                }
+
+                this.txtDbCompare.Text = CompareSchemas();
+            }
+            catch (Exception ex)
+            {
+                this.txtDbCompare.Text = ex.Message;
+            }
+
         }
 
         private void txtConnectionString_TextChanged(object sender, EventArgs e)
@@ -251,6 +309,8 @@ namespace DeveloperUtilityWin
 
         private void btnStandardUpsert_Click(object sender, EventArgs e)
         {
+            allEvent();
+
             if (__standardUpsert != null)
             {
                 __standardUpsert.Visible = false;
@@ -262,6 +322,124 @@ namespace DeveloperUtilityWin
             __standardUpsert.WindowState = FormWindowState.Normal;
             __standardUpsert.Visible = true;
         }
+
+        private void allEvent()
+        {
+            __xform.__primaryKey = this.txtPrimaryKeyField.Text;
+            __xform.__lookupKey = this.txtLookupKeyField.Text;
+        }
+
+        private void txtPrimaryKeyField_TextChanged(object sender, EventArgs e)
+        {
+            __xform.__primaryKey = this.txtPrimaryKeyField.Text;
+        }
+
+        private void txtLookupKeyField_TextChanged(object sender, EventArgs e)
+        {
+            __xform.__lookupKey = this.txtLookupKeyField.Text;
+        }
+
+        private void btnCompareDbs_Click(object sender, EventArgs e)
+        {
+            this.txtDbCompare.Clear();
+            for (int i = 0; i < this.lbTableList.Items.Count; ++i)
+            {
+                if (this.lbTableList.GetSelected(i))
+                {
+                    string selectedTable = this.lbTableList.GetItemText(lbTableList.Items[i]);
+                    Table leftTable = null;
+                    Table rightTable = null;
+                    if (selectedTable != string.Empty)
+                    {
+                        if (__leftSchema.ContainsKey(selectedTable))
+                        {
+                            leftTable = UtilityDataAccess.GetLeftTable(selectedTable, __leftSchema[selectedTable]);
+                        }
+
+                        if (__rightSchema.ContainsKey(selectedTable))
+                        {
+                            rightTable = UtilityDataAccess.GetRightTable(selectedTable, __rightSchema[selectedTable]);
+                        }
+                    }
+
+                    StringBuilder sb = new StringBuilder();
+                    if (leftTable != null && rightTable != null)
+                    {
+                        sb.AppendLine(leftTable.Name);
+                        sb.AppendLine("----------------------------------------------");
+                        for (int j = 0; j < leftTable.Rows.Count; ++j)
+                        {
+                            if (rightTable.Rows.Count > j)
+                            {
+                                if (!leftTable.Rows[j].CompareRow(rightTable.Rows[j]))
+                                {
+                                    sb.Append(leftTable.Rows[j].ToString());
+                                    sb.Append(" | DIFF: ");
+                                    sb.Append(rightTable.Rows[j].ToString());
+                                    sb.Append(Environment.NewLine);
+                                }
+                            }
+                            else
+                            {
+                                sb.Append(leftTable.Rows[j].ToString());
+                                sb.Append(" | MISSING: ");
+                                sb.Append(Environment.NewLine);
+                            }
+                        }
+                    }
+
+                    if (!sb.ToString().Contains("DIFF") && !sb.ToString().Contains("MISSING"))
+                    {
+                        sb.AppendLine(Constants.TABLE_DATA_MATCHES);
+                    }
+
+                    this.txtDbCompare.AppendText(sb.ToString());
+                }
+            }
+        }
+
+        #region Helpers
+
+        private string CompareSchemas()
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (KeyValuePair<string, List<string>> kv in __leftSchema)
+            {
+                if (!__rightSchema.ContainsKey(kv.Key))
+                {
+                    sb.AppendLine("Table: " + kv.Key + " [MISSING]");
+                    continue;
+                }
+
+                foreach (string col in kv.Value)
+                {
+                    bool found = false;
+                    foreach (string right_col in __rightSchema[kv.Key])
+                    {
+                        if (col == right_col)
+                        {
+                            found = true;
+                        }
+                    }
+
+                    if (!found)
+                    {
+                        sb.AppendLine(kv.Key + "." + col + " [MISSING]");
+                    }
+
+                }
+            }
+
+            if (sb.ToString().Length == 0)
+            {
+                sb.AppendLine(Constants.SCHEMA_MATCH);
+            }
+
+            return sb.ToString();
+        }
+
+
+        #endregion
 
 
 

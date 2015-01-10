@@ -82,5 +82,26 @@ IF	(@RowCount IS NOT NULL)
     ELSE
         PRINT '<<< FAILED CREATING PROCEDURE [@@PROC_NAME@@] >>>'
     GO";
+
+        public const string SCHEMA_MATCH = "Schema Names Match";
+
+        public const string TABLE_DATA_MATCHES = "Data in tables is identical";
+
+        public const string SELECT_SCHEMA =
+@"SELECT 
+     obj.name AS 'table' 
+    ,col.name AS 'column' 
+FROM	
+    sysobjects obj
+INNER JOIN syscolumns col
+	ON(obj.type = 'U' AND col.id = obj.id)
+WHERE
+    obj.name LIKE 't_%'
+    AND col.name != 'updated_date'
+    AND col.name != 'updated_by'
+ORDER BY
+	    obj.name
+	,col.name";
+
     }
 }

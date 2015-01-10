@@ -12,6 +12,14 @@ namespace DeveloperUtilityWin
 {
     public class TextTransform
     {
+        public string __primaryKey = "PrimaryKey";
+        public string __lookupKey = string.Empty;
+
+        public string CamelCase(string source)
+        {
+            return CamelCase(source, "_");
+        }
+
         public string CamelCase(string source, string delim)
         {
             StringBuilder sb = new StringBuilder();
@@ -59,6 +67,11 @@ namespace DeveloperUtilityWin
             }
 
             return sb.ToString();
+        }
+
+        public string CamelCasePrivate(string source)
+        {
+            return CamelCasePrivate(source, "_");
         }
 
         public string CamelCasePrivate(string source, string delim)
@@ -189,6 +202,11 @@ namespace DeveloperUtilityWin
                 return "string.Empty";
             }
 
+            if (dbType.ToLower().StartsWith("nvarchar"))
+            {
+                return "string.Empty";
+            }
+
             if (dbType.ToLower().StartsWith("datetime"))
             {
                 return "DateTime.MinValue";
@@ -281,6 +299,11 @@ namespace DeveloperUtilityWin
         public string ConvertDBTypeToClassType(string dbType)
         {
             if (dbType.ToLower().StartsWith("varchar"))
+            {
+                return "string";
+            }
+
+            if (dbType.ToLower().StartsWith("nvarchar"))
             {
                 return "string";
             }
@@ -422,6 +445,11 @@ namespace DeveloperUtilityWin
         {
             int maxLength = 0;
             //
+            // get table name without the leading "t_" to compare in check for primary
+            // key.
+            //
+            string tablePrimaryKey = SQLCase(__primaryKey);
+            //
             // get the max length for formatting
             //
             foreach (string str in tableLines)
@@ -509,19 +537,23 @@ namespace DeveloperUtilityWin
                     int space = str.IndexOf(" ", 0);
                     string fieldName = str.Substring(1, space).Trim();
 
-                    if (firstCol)
+                    if (!fieldName.Equals(tablePrimaryKey))
                     {
-                        line.Append("\t ");
-                        firstCol = false;
-                    }
-                    else
-                    {
-                        line.Append("\t,");
-                    }
-                    
-                    line.Append(fieldName);
 
-                    proc.AppendLine(line.ToString());
+                        if (firstCol)
+                        {
+                            line.Append("\t ");
+                            firstCol = false;
+                        }
+                        else
+                        {
+                            line.Append("\t,");
+                        }
+
+                        line.Append(fieldName);
+
+                        proc.AppendLine(line.ToString());
+                    }
 
                 }
             }
@@ -545,19 +577,22 @@ namespace DeveloperUtilityWin
                     int space = str.IndexOf(" ", 0);
                     string fieldName = str.Substring(1, space).Trim();
 
-                    if (firstCol)
+                    if (!fieldName.Equals(tablePrimaryKey))
                     {
-                        line.Append("\t @");
-                        firstCol = false;
-                    }
-                    else
-                    {
-                        line.Append("\t,@");
-                    }
-                    
-                    line.Append(fieldName.PadRight(maxLength + 2, ' '));
+                        if (firstCol)
+                        {
+                            line.Append("\t @");
+                            firstCol = false;
+                        }
+                        else
+                        {
+                            line.Append("\t,@");
+                        }
 
-                    proc.AppendLine(line.ToString());
+                        line.Append(fieldName.PadRight(maxLength + 2, ' '));
+
+                        proc.AppendLine(line.ToString());
+                    }
 
                 }
             }
@@ -736,9 +771,8 @@ namespace DeveloperUtilityWin
             //
             // 2. update table fields
             //
-            string primaryKey = string.Empty;
+            string primaryKey = SQLCase(__primaryKey);
             firstCol = true;
-            bool skip = true;
             foreach (string str in tableLines)
             {
                 line.Clear();
@@ -751,12 +785,7 @@ namespace DeveloperUtilityWin
                     int space = str.IndexOf(" ", 0);
                     string fieldName = str.Substring(1, space).Trim();
 
-                    if (skip)
-                    {
-                        skip = false;
-                        primaryKey = fieldName;
-                    }
-                    else
+                    if (!fieldName.Equals(primaryKey))
                     {
                         if (firstCol)
                         {
@@ -1010,7 +1039,7 @@ namespace DeveloperUtilityWin
                     //
                     int space = str.IndexOf(" ", 0);
                     string fieldName = str.Substring(1, space).Trim();
-                    string primaryKey = SQLCase(className) + "_id";
+                    string primaryKey = SQLCase(__primaryKey);
                     if (!fieldName.Equals(primaryKey))
                     {
                         if (firstCol)
@@ -1051,10 +1080,10 @@ namespace DeveloperUtilityWin
 
             line.Clear();
             line.Append("\t\tON(tbl.");
-            line.Append(SQLCase(className));
-            line.Append("_id = tmp.");
-            line.Append(SQLCase(className));
-            line.Append("_id)");
+            line.Append(SQLCase(__primaryKey));
+            line.Append(" = tmp.");
+            line.Append(SQLCase(__primaryKey));
+            line.Append(")");
             proc.AppendLine(line.ToString());
 
             proc.AppendLine();
@@ -1076,7 +1105,7 @@ namespace DeveloperUtilityWin
                     //
                     int space = str.IndexOf(" ", 0);
                     string fieldName = str.Substring(1, space).Trim();
-                    string primaryKey = SQLCase(className) + "_id";
+                    string primaryKey = SQLCase(__primaryKey);
                     if (!fieldName.Equals(primaryKey))
                     {
                         if (firstCol)
@@ -1110,7 +1139,7 @@ namespace DeveloperUtilityWin
                     //
                     int space = str.IndexOf(" ", 0);
                     string fieldName = str.Substring(1, space).Trim();
-                    string primaryKey = SQLCase(className) + "_id";
+                    string primaryKey = SQLCase(__primaryKey);
                     if (!fieldName.Equals(primaryKey))
                     {
                         if (firstCol)
@@ -1140,17 +1169,17 @@ namespace DeveloperUtilityWin
 
             line.Clear();
             line.Append("\t\tON(tmp.");
-            line.Append(SQLCase(className));
-            line.Append("_id = tbl.");
-            line.Append(SQLCase(className));
-            line.Append("_id)");
+            line.Append(SQLCase(__primaryKey));
+            line.Append(" = tbl.");
+            line.Append(SQLCase(__primaryKey));
+            line.Append(")");
             proc.AppendLine(line.ToString());
 
             proc.AppendLine("WHERE");
             line.Clear();
             line.Append("\ttbl.");
-            line.Append(SQLCase(className));
-            line.Append("_id IS NULL");
+            line.Append(SQLCase(__primaryKey));
+            line.Append(" IS NULL");
             proc.AppendLine(line.ToString());
 
             proc.AppendLine();
@@ -1452,10 +1481,13 @@ namespace DeveloperUtilityWin
             {
                 con.AppendLine("#region private members");
                 con.AppendLine();
-                line.Append("private Dictionary<int, ");
-                line.Append(className);
-                line.Append("> __cache;");
-                con.AppendLine(line.ToString());
+                if (__lookupKey != null && __lookupKey.Length > 0)
+                {
+                    line.Append("private Dictionary<int, ");
+                    line.Append(className);
+                    line.Append("> __cache;");
+                    con.AppendLine(line.ToString());
+                }
                 con.AppendLine();
                 con.AppendLine("#endregion");
 
@@ -1475,46 +1507,50 @@ namespace DeveloperUtilityWin
                 con.AppendLine(line.ToString());
                 con.AppendLine("{");
                 line.Clear();
-                line.Append("__cache = new Dictionary<int, ");
-                line.Append(className);
-                line.Append(">();");
-                con.AppendLine(line.ToString());
 
-                line.Clear();
-                line.Append("List<");
-                line.Append(className);
-                line.Append("> list = Read();");
-                con.AppendLine(line.ToString());
+                if (__lookupKey != null && __lookupKey.Length > 0)
+                {
+                    line.Append("__cache = new Dictionary<int, ");
+                    line.Append(className);
+                    line.Append(">();");
+                    con.AppendLine(line.ToString());
 
-                line.Clear();
-                line.Append("foreach (");
-                line.Append(className);
-                line.Append(" ");
-                line.Append(className[0].ToString().ToLower());
-                line.Append(" in list)");
-                con.AppendLine(line.ToString());
+                    line.Clear();
+                    line.Append("List<");
+                    line.Append(className);
+                    line.Append("> list = Read();");
+                    con.AppendLine(line.ToString());
 
-                con.AppendLine("{");
-                line.Clear();
-                line.Append("if (!__cache.ContainsKey(");
-                line.Append(className[0].ToString().ToLower());
-                line.Append(".Pta");
-                line.Append(className);
-                line.Append("Id))");
-                con.AppendLine(line.ToString());
-                con.AppendLine("{");
+                    line.Clear();
+                    line.Append("foreach (");
+                    line.Append(className);
+                    line.Append(" ");
+                    line.Append(className[0].ToString().ToLower());
+                    line.Append(" in list)");
+                    con.AppendLine(line.ToString());
 
-                line.Clear();
-                line.Append("__cache.Add(");
-                line.Append(className[0].ToString().ToLower());
-                line.Append(".Pta");
-                line.Append(className);
-                line.Append("Id, ");
-                line.Append(className[0].ToString().ToLower());
-                line.Append(");");
-                con.AppendLine(line.ToString());
-                con.AppendLine("}");
-                con.AppendLine("}");
+                    con.AppendLine("{");
+                    line.Clear();
+                    line.Append("if (!__cache.ContainsKey(");
+                    line.Append(className[0].ToString().ToLower());
+                    line.Append(".");
+                    line.Append(__lookupKey);
+                    line.Append("))");
+                    con.AppendLine(line.ToString());
+                    con.AppendLine("{");
+
+                    line.Clear();
+                    line.Append("__cache.Add(");
+                    line.Append(className[0].ToString().ToLower());
+                    line.Append(".");
+                    line.Append(__lookupKey);
+                    line.Append(", ");
+                    line.Append(className[0].ToString().ToLower());
+                    line.Append(");");
+                    con.AppendLine(line.ToString());
+                    con.AppendLine("}");
+                    con.AppendLine("}");
+                }
                 con.AppendLine("}");
 
                 con.AppendLine();
@@ -1532,8 +1568,8 @@ namespace DeveloperUtilityWin
                 string instanceName = className[0].ToString().ToLower() + className.Substring(1, className.Length - 1);
                 StringBuilder line = new StringBuilder();
                 line.Append("public int Get");
-                line.Append(className);
-                line.Append("Id(");
+                line.Append(__primaryKey);
+                line.Append("(");
                 line.Append(className);
                 line.Append(" ");
                 line.Append(instanceName);
@@ -1545,9 +1581,8 @@ namespace DeveloperUtilityWin
                 line.Append("if (__cache.ContainsKey(");
                 line.Append(instanceName);
                 line.Append(".");
-                line.Append("Pta");
-                line.Append(className);
-                line.Append("Id))");
+                line.Append(__lookupKey);
+                line.Append("))");
                 get.AppendLine(line.ToString());
 
                 get.AppendLine("{");
@@ -1561,28 +1596,27 @@ namespace DeveloperUtilityWin
                     string temp = str.Substring(1, space).Trim();
                     string member = CamelCase(temp, "_");
 
-                    string ptaIdMember;
+                    string lookupIdMember;
                     string identityIdMember;
 
                     line.Clear();
-                    line.Append("Pta");
-                    line.Append(className);
-                    line.Append("Id");
-                    ptaIdMember = line.ToString();
+                    line.Append(".");
+                    line.Append(__lookupKey);
+                    line.Append("))");
+                    lookupIdMember = line.ToString();
 
                     line.Clear();
-                    line.Append(className);
-                    line.Append("Id");
+                    line.Append(__primaryKey);
                     identityIdMember = line.ToString();
 
-                    if (!member.Equals(ptaIdMember) && !member.Equals(identityIdMember))
+                    if (!member.Equals(lookupIdMember) && !member.Equals(identityIdMember))
                     {
                         line.Clear();
                         line.Append("__cache[");
                         line.Append(instanceName);
-                        line.Append(".Pta");
-                        line.Append(className);
-                        line.Append("Id].");
+                        line.Append(".");
+                        line.Append(__lookupKey);
+                        line.Append("].");
                         line.Append(member);
                         line.Append(" = ");
                         line.Append(instanceName);
@@ -1603,17 +1637,17 @@ namespace DeveloperUtilityWin
                 line.Clear();
                 line.Append(instanceName);
                 line.Append(".");
-                line.Append(className);
-                line.Append("Id = WriteNew(");
+                line.Append(__primaryKey);
+                line.Append(" = WriteNew(");
                 line.Append(instanceName);
                 line.Append(", Environment.UserName);");
                 get.AppendLine(line.ToString());
                 line.Clear();
                 line.Append("__cache.Add(");
                 line.Append(instanceName);
-                line.Append(".Pta");
-                line.Append(className);
-                line.Append("Id, ");
+                line.Append(".");
+                line.Append(__lookupKey);
+                line.Append(", ");
                 line.Append(instanceName);
                 line.Append(");");
                 get.AppendLine(line.ToString());
@@ -1626,11 +1660,11 @@ namespace DeveloperUtilityWin
                 line.Clear();
                 line.Append("return __cache[");
                 line.Append(instanceName);
-                line.Append(".Pta");
-                line.Append(className);
-                line.Append("Id].");
-                line.Append(className);
-                line.Append("Id;");
+                line.Append(".");
+                line.Append(__lookupKey);
+                line.Append("].");
+                line.Append(__primaryKey);
+                line.Append(";");
                 get.AppendLine(line.ToString());
 
                 get.AppendLine("}");
@@ -1962,65 +1996,67 @@ namespace DeveloperUtilityWin
                 //
                 // select by id
                 //
-                line.Clear();
-                line.Append("public ");
-                line.Append(className);
-                line.Append(" ");
-                line.Append("Read(int pta");
-                line.Append(className);
-                line.Append("Id)");
-                file.AppendLine(line.ToString());
-                file.AppendLine("{");
+                if (__lookupKey != null && __lookupKey.Length > 0)
+                {
+                    line.Clear();
+                    line.Append("public ");
+                    line.Append(className);
+                    line.Append(" ");
+                    line.Append("Read(int ");
+                    line.Append(__lookupKey);
+                    line.Append(")");
+                    file.AppendLine(line.ToString());
+                    file.AppendLine("{");
 
-                line.Clear();
-                line.Append(className);
-                line.Append(" ");
-                line.Append(instanceName);
-                line.Append(" = new ");
-                line.Append(className);
-                line.Append("();");
-                file.AppendLine(line.ToString());
+                    line.Clear();
+                    line.Append(className);
+                    line.Append(" ");
+                    line.Append(instanceName);
+                    line.Append(" = new ");
+                    line.Append(className);
+                    line.Append("();");
+                    file.AppendLine(line.ToString());
 
-                line.Clear();
-                line.Append("DbCommand command = Database.GetStoredProcCommand(\"prc_");
-                line.Append(SQLCase(instanceName));
-                line.Append("_sel_by_id\");");
-                file.AppendLine(line.ToString());
+                    line.Clear();
+                    line.Append("DbCommand command = Database.GetStoredProcCommand(\"prc_");
+                    line.Append(SQLCase(instanceName));
+                    line.Append("_sel_by_id\");");
+                    file.AppendLine(line.ToString());
 
-                file.AppendLine("//");
-                file.AppendLine("// Optional Parameters:");
-                file.AppendLine("//");
+                    file.AppendLine("//");
+                    file.AppendLine("// Optional Parameters:");
+                    file.AppendLine("//");
 
-                line.Clear();
-                line.Append("Database.AddInParameter(command, \"@pta_");
-                line.Append(SQLCase(instanceName));
-                line.Append("_id\", DbType.Int32, ");
-                line.Append("pta");
-                line.Append(className);
-                line.Append("Id);");
-                file.AppendLine(line.ToString());
-                file.AppendLine("");
-                file.AppendLine("using (IDataReader dr = Database.ExecuteReader(command))");
-                file.AppendLine("{");
-                file.AppendLine("if (dr.Read())");
-                file.AppendLine("{");
+                    line.Clear();
+                    line.Append("Database.AddInParameter(command, \"@");
+                    line.Append(SQLCase(__primaryKey));
+                    line.Append("\", DbType.Int32, ");
+                    line.Append(__primaryKey);
+                    line.Append(");");
+                    file.AppendLine(line.ToString());
+                    file.AppendLine("");
+                    file.AppendLine("using (IDataReader dr = Database.ExecuteReader(command))");
+                    file.AppendLine("{");
+                    file.AppendLine("if (dr.Read())");
+                    file.AppendLine("{");
 
-                line.Clear();
-                line.Append(instanceName);
-                line.Append(" = Load(dr, ");
-                line.Append(instanceName);
-                line.Append(");");
-                file.AppendLine(line.ToString());
-                file.AppendLine("}");
-                file.AppendLine("}");
-                file.AppendLine();
+                    line.Clear();
+                    line.Append(instanceName);
+                    line.Append(" = Load(dr, ");
+                    line.Append(instanceName);
+                    line.Append(");");
+                    file.AppendLine(line.ToString());
+                    file.AppendLine("}");
+                    file.AppendLine("}");
+                    file.AppendLine();
 
-                line.Clear();
-                line.Append("return ");
-                line.Append(instanceName);
-                line.Append(";");
-                file.AppendLine(line.ToString());
-                file.AppendLine("}");
+                    line.Clear();
+                    line.Append("return ");
+                    line.Append(instanceName);
+                    line.Append(";");
+                    file.AppendLine(line.ToString());
+                    file.AppendLine("}");
+                }
             }
 
             return file.ToString();
@@ -2032,19 +2068,22 @@ namespace DeveloperUtilityWin
             StringBuilder line = new StringBuilder();
             line.Append("public class ");
             line.Append(className);
-            line.Append("Repository : RepositoryBase, I");
-            line.Append(className);
-            line.Append("Repository");
+            line.Append("Repository : RepositoryBase");
+
 
             methods.AppendLine(line.ToString());
             methods.AppendLine("{");
             methods.AppendLine(GetConstructor(className));
             methods.AppendLine();
             methods.AppendLine("#region public methods");
-            methods.AppendLine("");
-            methods.AppendLine(GetGetMethod(tableLines, className));
-            methods.AppendLine("");
-            methods.AppendLine(GetPushCacheMethod(className));
+
+            if (__lookupKey != null && __lookupKey.Length > 0)
+            {
+                methods.AppendLine("");
+                methods.AppendLine(GetGetMethod(tableLines, className));
+                methods.AppendLine("");
+                methods.AppendLine(GetPushCacheMethod(className));
+            }
             methods.AppendLine("");
             methods.AppendLine(GetReadMethod(className));
             methods.AppendLine("");

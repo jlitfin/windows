@@ -21,9 +21,14 @@ namespace DeveloperUtilityWin
         {
             get
             {
-                if (DataType.Equals("varchar"))
+                if (DataType.Equals("varchar") || DataType.Equals("nvarchar"))
                 {
-                    return DataType + "(" + CharacterLength + ")";
+                    string l = CharacterLength;
+                    if (CharacterLength.Equals("-1"))
+                    {
+                        l = "MAX";
+                    }
+                    return DataType + "(" + l + ")";
                 }
                 else if (DataType.Equals("decimal"))
                 {
@@ -67,7 +72,7 @@ namespace DeveloperUtilityWin
             sb.Append(".");
             sb.Append(TableSchema);
             sb.Append(".");
-            sb.Append(TableName);
+            sb.Append("TABLE");
             sb.Append(".");
             sb.Append(ColumnName);
             sb.Append(" : ");
@@ -84,7 +89,7 @@ namespace DeveloperUtilityWin
             sb.Append(".");
             sb.Append(TableSchema);
             sb.Append(".");
-            sb.Append(TableName);
+            sb.Append("TABLE");
             sb.Append(".");
             sb.Append(ColumnName);
 
@@ -109,7 +114,7 @@ namespace DeveloperUtilityWin
             sb.Append(".");
             sb.Append(TableSchema);
             sb.Append(".");
-            sb.Append(TableName);
+            sb.Append("TABLE");
             sb.Append(".");
             sb.Append(ColumnName);
 

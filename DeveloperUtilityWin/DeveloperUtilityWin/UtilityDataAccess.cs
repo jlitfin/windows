@@ -13,6 +13,10 @@ namespace DeveloperUtilityWin
     public static class UtilityDataAccess
     {
         private static Microsoft.Practices.EnterpriseLibrary.Data.Database __database;
+        private static Dictionary<string, List<string>> __leftSchema;
+        private static Dictionary<string, List<string>> __rightSchema;
+
+        #region public accessors
 
         public static Database Database
         {
@@ -23,6 +27,40 @@ namespace DeveloperUtilityWin
             }
         }
 
+        public static string ConnectionString { get; set; }
+
+        public static Dictionary<string, List<string>> LeftSchema
+        {
+            get
+            {
+                if (__leftSchema == null)
+                {
+                    InitializeLeftSchema();
+                }
+
+                return __leftSchema;
+            }
+        }
+
+
+
+        public static Dictionary<string, List<string>> RightSchema
+        {
+            get
+            {
+                if (__rightSchema == null)
+                {
+                    InitializeRightSchema();
+                }
+
+                return __rightSchema;
+            }
+        }
+
+        #endregion
+
+        #region public methods
+
         public static bool ColumnExists(IDataRecord dr, string columnName)
         {
             try
@@ -32,6 +70,30 @@ namespace DeveloperUtilityWin
             catch (IndexOutOfRangeException)
             {
                 return false;
+            }
+        }
+
+        public static Table GetLeftTable(string table, List<string> columns)
+        {
+            Database databaseLeft = DatabaseFactory.CreateDatabase("db_left");
+            DbCommand command = databaseLeft.GetSqlStringCommand(GetSelectForTable(table, columns));
+
+            using (IDataReader dr = databaseLeft.ExecuteReader(command))
+            {
+                Table t = new Table(table, columns, dr);
+                return t;
+            }
+        }
+
+        public static Table GetRightTable(string table, List<string> columns)
+        {
+            Database databaseLeft = DatabaseFactory.CreateDatabase("db_right");
+            DbCommand command = databaseLeft.GetSqlStringCommand(GetSelectForTable(table, columns));
+
+            using (IDataReader dr = databaseLeft.ExecuteReader(command))
+            {
+                Table t = new Table(table, columns, dr);
+                return t;
             }
         }
 
@@ -70,6 +132,77 @@ namespace DeveloperUtilityWin
             return columns;
         }
 
-        public static string ConnectionString { get; set; }
+        #endregion
+
+        #region private methods
+
+        private static string GetSelectForTable(string tableName, List<string> columns)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("SELECT");
+            bool isFirst = true;
+            foreach (string col in columns)
+            {
+                if (isFirst)
+                {
+                    sb.AppendLine(col);
+                    isFirst = false;
+                }
+                else
+                {
+                    sb.Append(",");
+                    sb.Append(col);
+                    sb.Append(Environment.NewLine);
+                }
+            }
+            sb.AppendLine("FROM");
+            sb.AppendLine(tableName);
+
+            return sb.ToString();
+        }
+
+        private static void InitializeLeftSchema()
+        {
+            Database databaseLeft = DatabaseFactory.CreateDatabase("db_left");
+            DbCommand command = databaseLeft.GetSqlStringCommand(Constants.SELECT_SCHEMA);
+
+            using (IDataReader dr = databaseLeft.ExecuteReader(command))
+            {
+                LoadSchema(dr, out __leftSchema);
+            }
+        }
+
+
+
+        private static void InitializeRightSchema()
+        {
+            Database databaseRight = DatabaseFactory.CreateDatabase("db_right");
+            DbCommand command = databaseRight.GetSqlStringCommand(Constants.SELECT_SCHEMA);
+
+            using (IDataReader dr = databaseRight.ExecuteReader(command))
+            {
+                LoadSchema(dr, out __rightSchema);
+            }
+        }
+
+        private static void LoadSchema(IDataReader dr, out Dictionary<string, List<string>> target)
+        {
+            target = new Dictionary<string, List<string>>();
+            while (dr.Read())
+            {
+                string key = dr["table"].ToString();
+                if (!target.ContainsKey(key))
+                {
+                    target.Add(key, new List<string>());
+                }
+
+                string column = dr["column"].ToString();
+                target[key].Add(column);
+            }
+        }
+
+        #endregion
+
+
     }
 }
