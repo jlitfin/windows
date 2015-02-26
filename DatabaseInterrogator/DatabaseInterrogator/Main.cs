@@ -55,28 +55,158 @@ namespace DatabaseInterrogator
             updateServersList();
         }
 
+        private void highlightQueryString()
+        {
+            List<int> indexes = new List<int>();
+            string str = this.txtSearch.Text.ToUpper();
+            string src = this.txtSearchResult.Text.ToUpper();
+
+            int j = src.IndexOf(str, 0);
+            while (j != -1)
+            {
+                indexes.Add(j);
+                if (j + str.Length < src.Length)
+                {
+                    j = src.IndexOf(str, j + str.Length);
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            foreach (var n in indexes)
+            {
+                this.txtSearchResult.Select(n, str.Length);
+                this.txtSearchResult.SelectionBackColor = SystemColors.Highlight;
+                this.txtSearchResult.SelectionColor = SystemColors.HighlightText;
+            }
+            
+            
+        }
+
+        private void displayCompareResult(List<CompareResult> list)
+        {
+            this.txtComparResult.Clear();
+            if (list != null && list.Count > 0)
+            {
+                string c0h = "OBJECT";
+                string c12h = list[0].ObjectServer + "." + list[0].ObjectDatabase;
+                string c3h = "STATUS";
+                string c45h = list[0].CompareServer + "." + list[0].CompareDatabase;
+
+                int c0, c1, c2, c3, c4, c5;
+                c0 = c1 = c2 = c3 = c4 = c5 = 0;
+                int buffer = 2;
+                list = list.OrderBy(cr => cr.ComparisonType).ToList();
+
+                foreach (var r in list)
+                {
+                    if (r.ComparisonType.Length > c0) c0 = r.ComparisonType.Length;
+                    if (r.ObjectType.Length > c1) c1 = r.ObjectType.Length;
+                    if (r.ObjectId.Length > c2) c2 = r.ObjectId.Length;
+                    if (r.CompareStatus.Length > c3) c3 = r.CompareStatus.Length;
+                    if (r.CompareObjectType.Length > c4) c4 = r.CompareObjectType.Length;
+                    if (r.CompareObjectId.Length > c5) c5 = r.CompareObjectId.Length;
+                }
+
+                if (c0 < c0h.Length) c0 = c0h.Length;
+                if (c1 + Math.Max(c2, c5) < c12h.Length) c2 = c12h.Length - c1;
+                if (c3 < c3h.Length) c3 = c3h.Length;
+                if (c4 + Math.Max(c2, c5) < c45h.Length) c5 = c45h.Length - c4;
+                string formath = "  {0, -" + (c0).ToString() +
+                    "}  {1, -" + (c1 + Math.Max(c2, c5) + buffer).ToString() +
+                    "}  {2, -" + (c3).ToString() +
+                    "}  {3, -" + (c4 + c5 + buffer).ToString() + "}\r\n";
+                string hdr = string.Format(formath, c0h, c12h, c3h, c45h);
+                this.txtComparResult.AppendText(hdr);
+                this.txtComparResult.AppendText("\r\n".PadLeft(buffer * 7 + c0 + c1 + Math.Max(c2,c5) * 2 + c3 + c4, '-'));
+
+                string format = "  {0, -" + (c0).ToString() +
+                    "}  {1, -" + (c1).ToString() +
+                    "}  {2,  " + (Math.Max(c2, c5)).ToString() +
+                    "}  {3, -" + (c3).ToString() +
+                    "}  {5, -" + (Math.Max(c2, c5)).ToString() +
+                    "}  {4, -" + (c4).ToString() + "}\r\n";
+
+                foreach (var r in list)
+                {
+                    this.txtComparResult.AppendText(
+                        string.Format(format,
+                            r.ComparisonType,
+                            r.ObjectType,
+                            r.ObjectId,
+                            r.CompareStatus,
+                            r.CompareObjectType,
+                            r.CompareObjectId
+                            ));
+                }
+            }
+            else
+            {
+                this.txtComparResult.AppendText("No differences found.");
+            }
+        }
+
         private void displaySearchResult(List<SearchResult> list)
         {
-            int c1 = 0;
-            int c2 = 0;
-            int c3 = 0;
-            int c4 = 0;
-            int buffer = 2;
-            foreach (var sr in list)
-            {
-                c1 = (sr.ObjectType.Length > c1) ? sr.ObjectType.Length : c1;
-                c2 = (sr.ObjectName.Length > c2) ? sr.ObjectName.Length : c2;
-                c3 = (sr.Server.Length > c3) ? sr.Server.Length : c3;
-                c4 = (sr.Database.Length > c4) ? sr.Database.Length : c4;
-            }
-            string format = "{0, -" + (c1 + buffer).ToString() + "}{1, -" + (c2 + buffer).ToString() + "}{2, -" + (c3 + buffer).ToString() + "}{3, -" + (c3 + buffer).ToString() + "}\r\n";
             this.txtSearchResult.Clear();
-            this.txtSearchResult.AppendText(string.Format(format, "TYPE", "OBJECT", "SERVER", "DATABASE"));
-            this.txtSearchResult.AppendText("-".PadRight(c1 + c2 + c3 + c4 + (buffer * 3), '-') + "\r\n");
-            foreach (var sr in list)
+            StringBuilder displayText = new StringBuilder();
+            if (list != null && list.Count > 0)
             {
-                this.txtSearchResult.AppendText(string.Format(format, sr.ObjectType, sr.ObjectName, sr.Server, sr.Database));
+                int c1 = 0;
+                int c2 = 0;
+                int c3 = 0;
+                int c4 = 0;
+                int buffer = 2;
+                foreach (var sr in list)
+                {
+                    if (!sr.SearchableType.Equals("TEXT"))
+                    {
+                        c1 = (sr.ObjectType.Length > c1) ? sr.ObjectType.Length : c1;
+                        c2 = (sr.ObjectSearchable.Length > c2) ? sr.ObjectSearchable.Length : c2;
+                        c3 = (sr.Server.Length > c3) ? sr.Server.Length : c3;
+                        c4 = (sr.Database.Length > c4) ? sr.Database.Length : c4;
+                    }
+                }
+                string format = "  {0, -" + (c1 + buffer).ToString() + "}{1, -" + (c2 + buffer).ToString() + "}{2, -" + (c3 + buffer).ToString() + "}{3, -" + (c3 + buffer).ToString() + "}\r\n";
+                this.txtSearchResult.AppendText(string.Format(format, "TYPE", "OBJECT", "SERVER", "DATABASE"));
+                this.txtSearchResult.AppendText("  -".PadRight(2 + c1 + c2 + c3 + c4 + (buffer * 3), '-') + "\r\n");
+                
+                foreach (var sr in list)
+                {
+                    if (sr.SearchableType.Equals("TEXT"))
+                    {
+                        displayText.AppendLine();
+                        displayText.Append(string.Format(format, sr.ObjectType, sr.ObjectName, sr.Server, sr.Database));
+                        StringBuilder txt = new StringBuilder();
+                        using (StreamReader rdr = new StreamReader(new MemoryStream(System.Text.Encoding.UTF8.GetBytes(sr.ObjectSearchable))))
+                        {
+                            txt.AppendLine();
+                            string line = string.Empty;
+                            string format2 = "  {0, -" + (c1 + buffer).ToString() + "}{1}";
+                            while ((line = rdr.ReadLine()) != null)
+                            {
+                                txt.AppendLine(string.Format(format2, " ", line));
+                            }
+                            txt.AppendLine();
+                        }
+
+                        displayText.Append(txt.ToString());
+                    }
+                    else
+                    {
+                        displayText.Append(string.Format(format, sr.ObjectType, sr.ObjectSearchable, sr.Server, sr.Database));
+                    }
+                }
             }
+            else
+            {
+                displayText.AppendLine("No Results.");
+            }
+
+            this.txtSearchResult.AppendText(displayText.ToString());
+            highlightQueryString();
         }
 
         private void btnAddServer_Click(object sender, EventArgs e)
@@ -104,6 +234,7 @@ namespace DatabaseInterrogator
                     this.lbDatabases.Items.Clear();
                     this.lbDatabases.Items.AddRange(dblist.ToArray());
                     this.pnlSearchControls.Visible = true;
+                    this.btnSearch.Enabled = false;
                 }
                 else
                 {
@@ -126,8 +257,6 @@ namespace DatabaseInterrogator
             if (!string.IsNullOrEmpty(this.txtSearch.Text))
             {
                 this.Cursor = Cursors.WaitCursor;
-                this.btnSearch.Enabled = false;
-
                 try
                 {
                     var cumulative = new List<SearchResult>();
@@ -136,10 +265,17 @@ namespace DatabaseInterrogator
                         Database db = item as Database;
                         if (db != null)
                         {
-                            log(string.Format("searching {0}->{1} ...", db.Server, db.Name), false);
-                            List<SearchResult> results = Repository.Search(db, this.txtSearch.Text);
-                            cumulative.AddRange(results);
-                            log(string.Format("located {0} possible objects.", results.Count), true);
+                            log(string.Format("searching {0}.{1} ...", db.Server, db.Name), false);
+                            try
+                            {
+                                List<SearchResult> results = Repository.Search(db, this.txtSearch.Text, this.chkText.Checked);
+                                cumulative.AddRange(results);
+                                log(string.Format("located {0} possible objects.", results.Count), true);
+                            }
+                            catch
+                            {
+                                log(string.Format("could not connect to {0}", db.Name), true);
+                            }
                         }
                     }
                     displaySearchResult(cumulative.OrderBy(r => r.ObjectType).ToList());
@@ -160,6 +296,10 @@ namespace DatabaseInterrogator
             this.cboServers.Items.Clear();
             this.cboServers.Items.AddRange(Repository.ServerList.ToArray());
             this.cboServers.SelectedIndex = 0;
+
+            this.cboCompareServer.Items.Clear();
+            this.cboCompareServer.Items.AddRange(Repository.ServerList.ToArray());
+            this.cboCompareServer.SelectedIndex = 0;
         }
 
         private void lbDatabases_SelectedIndexChanged(object sender, EventArgs e)
@@ -171,6 +311,11 @@ namespace DatabaseInterrogator
             else
             {
                 this.btnSearch.Enabled = false;
+            }
+
+            if (this.lbDatabases.SelectedItems.Count < this.lbDatabases.Items.Count)
+            {
+                this.chkDatabasesSelectAll.Checked = false;
             }
         }
 
@@ -186,7 +331,86 @@ namespace DatabaseInterrogator
             }
         }
 
+        private void chkDatabasesSelectAll_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.chkDatabasesSelectAll.Checked)
+            {
+                for (int i = 0; i < this.lbDatabases.Items.Count; ++i)
+                {
+                    this.lbDatabases.SetSelected(i, true);
+                }
+            }
+        }
+
+        private void btnCompare_Click(object sender, EventArgs e)
+        {
+            if (this.cboServers.SelectedIndex != 0 && 
+                this.cboCompareServer.SelectedIndex != 0 && 
+                this.lbDatabases.SelectedItems.Count == 1 &&
+                this.cboCompareDatabase.SelectedIndex != -1)
+            {
+                try
+                {
+                    this.Cursor = Cursors.WaitCursor;
+                    string primary = this.cboServers.SelectedItem.ToString();
+                    string secondary = this.cboCompareServer.SelectedItem.ToString();
+                    string pdb = this.lbDatabases.SelectedItem.ToString();
+                    string sdb = this.cboCompareDatabase.SelectedItem.ToString();
+
+                    log(string.Format("comparing {0}.{1} with {2}.{1} ...", primary, pdb, secondary));
+                    List<CompareResult> list = Repository.Compare(primary, secondary, pdb, sdb);
+                    log("done.", true);
+                    displayCompareResult(list);
+                }
+                catch (Exception ex)
+                {
+                    this.txtComparResult.Text = ex.Message;
+                }
+                finally
+                {
+                    this.Cursor = Cursors.Default;
+                }
+            }
+            else
+            {
+                this.txtComparResult.Text = "Select a valid primary server and a single database.";
+            }
+        }
+
+        private void cboCompareServer_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            this.Cursor = Cursors.WaitCursor;
+            try
+            {
+                var server = this.cboCompareServer.SelectedItem.ToString();
+                if (server.Equals(Repository.SERVER_LIST_DEFAULT_VALUE)) return;
+
+                log(string.Format("querying server {0}...", server), false);
+                var dblist = Repository.GetDatabases(server);
+                if (dblist != null && dblist.Count > 0)
+                {
+                    this.cboCompareDatabase.Items.Clear();
+                    this.cboCompareDatabase.Items.AddRange(dblist.ToArray());
+                }
+                log("done.", true);
+            }
+            catch (Exception ex)
+            {
+                log(ex.Message);
+            }
+            finally
+            {
+                this.Cursor = Cursors.Default;
+            }
+        }
+
         #endregion
+
+        
+
+        
+
+
 
     }
 }

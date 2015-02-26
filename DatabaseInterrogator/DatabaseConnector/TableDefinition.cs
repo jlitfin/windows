@@ -6,20 +6,32 @@ using System.Threading.Tasks;
 
 namespace DatabaseConnector
 {
-    public class TableDefinition
+    public class TableDefinition : DatabaseObject, IComparable
     {
         public string Catalog { get; set; }
         public string Schema { get; set; }
-        public string Name { get; set; }
-        public string Type { get; set; }
-        public string Key
+
+        public override string ObjectId
         {
             get
             {
-                return Catalog + Schema + Name;
+                return ObjectServer + "." + ObjectName;
             }
         }
 
         public List<ColumnDefinition> Columns { get; set; }
+
+        int IComparable.CompareTo(object def)
+        {
+            TableDefinition d = def as TableDefinition;
+            if (d != null)
+            {
+                return string.Compare(this.ObjectName, d.ObjectName);
+            }
+            else
+            {
+                throw new ArgumentException("Not a valid TableDefinition");
+            }
+        }
     }
 }

@@ -12,15 +12,31 @@ namespace DatabaseConnector
     public class Repository
     {
         private const string SERVER_LIST_FILE = "servers.txt";
-        public const string SERVER_LIST_DEFAULT_VALUE = "Select Server";
+        public const string SERVER_LIST_DEFAULT_VALUE = "[Select Server]";
         public const string DATABASE_LIST_DEFAULT_VALUE = "All";
 
         #region cache
 
         private static Dictionary<string, bool> _serverList;
+        //
+        // column cache
+        // keyed by server.database
+        //
         private static Dictionary<string, List<ColumnDefinition>> _columnCache;
+        //
+        // db cache 
+        // keyed by server
+        //
         private static Dictionary<string, List<Database>> _dbCache;
+        //
+        // routine cache
+        // keyed by server.database
+        //
         private static Dictionary<string, List<RoutineDefinition>> _routineCache;
+        //
+        // table cache
+        // keyed by server.database
+        //
         private static Dictionary<string, List<TableDefinition>> _tableCache;
 
         #endregion
@@ -53,7 +69,7 @@ namespace DatabaseConnector
 
                 }
 
-                return _serverList.Keys.ToList<string>();
+                return _serverList.Keys.OrderBy(s => s).ToList<string>();
             }
         }
 
@@ -77,7 +93,7 @@ namespace DatabaseConnector
             }
             if (ColumnExists("COLUMN_NAME", rdr))
             {
-                def.Name = rdr["COLUMN_NAME"].ToString();
+                def.ObjectName = rdr["COLUMN_NAME"].ToString();
             }
             if (ColumnExists("DATA_TYPE", rdr))
             {
@@ -110,11 +126,11 @@ namespace DatabaseConnector
             }
             if (ColumnExists("ROUTINE_NAME", rdr))
             {
-                def.Name = rdr["ROUTINE_NAME"].ToString();
+                def.ObjectName = rdr["ROUTINE_NAME"].ToString();
             }
             if (ColumnExists("ROUTINE_TYPE", rdr))
             {
-                def.Type = rdr["ROUTINE_TYPE"].ToString();
+                def.RoutineType = rdr["ROUTINE_TYPE"].ToString();
             }
             if (ColumnExists("ROUTINE_DEFINITION", rdr))
             {
@@ -135,12 +151,233 @@ namespace DatabaseConnector
             }
             if (ColumnExists("TABLE_NAME", rdr))
             {
-                def.Name = rdr["TABLE_NAME"].ToString();
+                def.ObjectName = rdr["TABLE_NAME"].ToString();
             }
-            if (ColumnExists("TABLE_TYPE", rdr))
+        }
+
+        private static List<CompareResult> EvaluateColumnDiffs(CompareRequest request, List<ColumnDefinition> primary, List<ColumnDefinition> secondary)
+        {
+            if (primary.Count != secondary.Count) throw new ArgumentException(string.Format("Column list mismatch"));
+
+            List<CompareResult> list = new List<CompareResult>();
+            for (int i = 0; i < primary.Count; ++i)
             {
-                def.Type = rdr["TABLE_TYPE"].ToString();
+                if (primary[i] == null)
+                {
+                    CompareResult r = new CompareResult
+                    {
+                        ComparisonType = "COLUMN",
+                        ObjectName = string.Empty,
+                        ObjectType = string.Empty,
+                        ObjectId = string.Empty,
+                        ObjectDatabase = request.PrimaryDatabase,
+                        ObjectServer = request.PrimaryServer,
+                        CompareStatus = "MISSING",
+                        CompareObjectName = secondary[i].ObjectName,
+                        CompareObjectType = secondary[i].DataType,
+                        CompareObjectId = secondary[i].ObjectId,
+                        CompareDatabase = secondary[i].ObjectDatabase,
+                        CompareServer = secondary[i].ObjectServer
+                    };
+                    list.Add(r);
+                }
+                else if (secondary[i] == null)
+                {
+                    CompareResult r = new CompareResult
+                    {
+                        ComparisonType = "COLUMN",
+                        ObjectName = primary[i].ObjectName,
+                        ObjectType = primary[i].DataType,
+                        ObjectId = primary[i].ObjectId,
+                        ObjectDatabase = primary[i].ObjectDatabase,
+                        ObjectServer = primary[i].ObjectServer,
+                        CompareStatus = "MISSING",
+                        CompareObjectName = string.Empty,
+                        CompareObjectType = string.Empty,
+                        CompareObjectId = string.Empty,
+                        CompareDatabase = request.SecondaryDatabase,
+                        CompareServer = request.SecondaryServer
+                    };
+                    list.Add(r);
+                }
+                else
+                {
+                    if (!primary[i].DataType.Equals(secondary[i].DataType))
+                    {
+                        CompareResult r = new CompareResult
+                        {
+                            ComparisonType = "COLUMN",
+                            ObjectName = primary[i].ObjectName,
+                            ObjectType = primary[i].DataType,
+                            ObjectId = primary[i].ObjectId,
+                            ObjectDatabase = primary[i].ObjectDatabase,
+                            ObjectServer = primary[i].ObjectServer,
+                            CompareStatus = "DIFF",
+                            CompareObjectName = secondary[i].ObjectName,
+                            CompareObjectType = secondary[i].DataType,
+                            CompareObjectId = secondary[i].ObjectId,
+                            CompareDatabase = secondary[i].ObjectDatabase,
+                            CompareServer = secondary[i].ObjectServer
+                        };
+                        list.Add(r);
+                    }
+                }
             }
+            return list;
+        }
+
+        private static List<CompareResult> CompareColumns(CompareRequest request, TableDefinition primary, TableDefinition secondary)
+        {
+            List<ColumnDefinition> pt = (from c in GetColumns(request.PrimaryServer, request.PrimaryDatabase)
+                                           where c.Table == primary.ObjectName
+                                           select c).ToList<ColumnDefinition>();
+
+            List<ColumnDefinition> st = (from c in GetColumns(request.SecondaryServer, request.SecondaryDatabase)
+                                            where c.Table == secondary.ObjectName
+                                            select c).ToList<ColumnDefinition>();
+
+            pt.Sort();
+            st.Sort();
+            int i = 0;
+            while (true)
+            {
+                if (i < pt.Count && i < st.Count)
+                {
+                    int c = string.Compare(pt[i].ObjectName, st[i].ObjectName);
+                    if (c > 0)
+                    {
+                        pt.Insert(i, null);
+                    }
+                    else if (c < 0)
+                    {
+                        st.Insert(i, null);
+                    }
+                }
+                else if (i >= pt.Count && i < st.Count)
+                {
+                    pt.Add(null);
+                }
+                else if (i < pt.Count && i >= st.Count)
+                {
+                    st.Add(null);
+                }
+                else
+                {
+                    break;
+                }
+                ++i;
+            }
+
+            return EvaluateColumnDiffs(request, pt, st);
+        }
+
+        private static List<CompareResult> EvaluateTableDiffs(CompareRequest request, List<TableDefinition> primary, List<TableDefinition> secondary)
+        {
+            if (primary.Count != secondary.Count) throw new ArgumentException("Table list mismatch");
+
+            List<CompareResult> list = new List<CompareResult>();
+            for (int i = 0; i < primary.Count; ++i)
+            {
+                if (primary[i] == null)
+                {
+                    CompareResult r = new CompareResult
+                    {
+                        ComparisonType = "TABLE",
+                        ObjectName = string.Empty,
+                        ObjectType = string.Empty,
+                        ObjectId = string.Empty,
+                        ObjectDatabase = request.PrimaryDatabase,
+                        ObjectServer = request.PrimaryServer,
+                        CompareStatus = "MISSING",
+                        CompareObjectName = secondary[i].ObjectName,
+                        CompareObjectType = secondary[i].ObjectType,
+                        CompareObjectId = secondary[i].ObjectId,
+                        CompareDatabase = secondary[i].ObjectDatabase,
+                        CompareServer = secondary[i].ObjectServer
+                    };
+                    list.Add(r);
+                }
+                else if (secondary[i] == null)
+                {
+                    CompareResult r = new CompareResult
+                    {
+                        ComparisonType = "TABLE",
+                        ObjectName = primary[i].ObjectName,
+                        ObjectType = primary[i].ObjectType,
+                        ObjectId = primary[i].ObjectId,
+                        ObjectDatabase = primary[i].ObjectDatabase,
+                        ObjectServer = primary[i].ObjectServer,
+                        CompareStatus = "MISSING",
+                        CompareObjectName = string.Empty,
+                        CompareObjectType = string.Empty,
+                        CompareObjectId = string.Empty,
+                        CompareDatabase = request.SecondaryDatabase,
+                        CompareServer = request.SecondaryServer
+                    };
+                    list.Add(r);
+                }
+                else
+                {
+                    list.AddRange(CompareColumns(request, primary[i], secondary[i]));
+                }
+            }
+
+            return list;
+        }
+
+        private static List<CompareResult> CompareTables(CompareRequest request, Database primary, Database secondary)
+        {
+            List<CompareResult> list = new List<CompareResult>();
+            var pt = GetTables(primary.Server, primary.Name);
+            var st = GetTables(secondary.Server, secondary.Name);
+            pt.Sort();
+            st.Sort();
+
+            int i = 0;
+            while (true)
+            {
+                if (i < pt.Count && i < st.Count)
+                {
+                    int c = string.Compare(pt[i].ObjectName, st[i].ObjectName);
+                    if (c > 0)
+                    {
+                        pt.Insert(i, null);
+                    }
+                    else if (c < 0)
+                    {
+                        st.Insert(i, null);
+                    }
+                }
+                else if (i >= pt.Count && i < st.Count)
+                {
+                    pt.Add(null);
+                }
+                else if (i < pt.Count && i >= st.Count)
+                {
+                    st.Add(null);
+                }
+                else
+                {
+                    break;
+                }
+                ++i;
+            }
+
+            return EvaluateTableDiffs(request, pt, st);
+        }
+
+        private static Database GetDatabase(string server, string database)
+        {
+            List<Database> list = GetDatabases(server);
+            foreach (var db in list)
+            {
+                if (db.Name.Equals(database))
+                {
+                    return db;
+                }
+            }
+
+            return null;
         }
 
         private static bool ColumnExists(string colName, SqlDataReader reader)
@@ -165,13 +402,56 @@ namespace DatabaseConnector
 
         #endregion
 
+        #region public methods
+
         public static void AddServer(string serverName)
         {
+            serverName = serverName.ToUpper();
             if (!_serverList.ContainsKey(serverName))
             {
                 _serverList.Add(serverName, true);
                 WriteServerList();
             }
+        }
+
+        public static List<CompareResult> Compare(string primaryServer, string secondaryServer, string primaryDb, string secondaryDb, bool deep = false)
+        {
+            List<CompareResult> list = new List<CompareResult>();
+            var primary = GetDatabase(primaryServer, primaryDb);
+            var secondary = GetDatabase(secondaryServer, secondaryDb);
+            if (primary != null && secondary != null)
+            {
+                CompareRequest r = new CompareRequest
+                {
+                    PrimaryServer = primaryServer,
+                    PrimaryDatabase = primaryDb,
+                    SecondaryServer = secondaryServer,
+                    SecondaryDatabase = secondaryDb
+                };
+
+                list = CompareTables(r, primary, secondary);
+            }
+            else
+            {
+                CompareResult error = new CompareResult
+                {
+                    ComparisonType = "DATABASE",
+                    ObjectName = primaryDb,
+                    ObjectType = "DATABASE",
+                    ObjectId = primaryDb,
+                    ObjectServer = primaryServer,
+                    ObjectDatabase = primaryDb,
+                    CompareStatus = secondary == null ? "MISSING" : "Error querying primary server.",
+                    CompareObjectName = primaryDb,
+                    CompareObjectType = "DATABASE",
+                    CompareObjectId = primaryDb,
+                    CompareServer = secondaryServer,
+                    CompareDatabase = secondaryDb
+                };
+                list.Add(error);
+            }
+            
+            return list;
         }
 
         public static void DeleteServer(string serverName)
@@ -185,6 +465,7 @@ namespace DatabaseConnector
 
         public static List<ColumnDefinition> GetColumns(string server, string database)
         {
+            List<ColumnDefinition> c = new List<ColumnDefinition>();
             if (_columnCache == null)
             {
                 _columnCache = new Dictionary<string, List<ColumnDefinition>>();
@@ -193,7 +474,8 @@ namespace DatabaseConnector
             string key = server + "." + database;
             if (_columnCache.ContainsKey(key))
             {
-                return _columnCache[key];
+                c.AddRange(_columnCache[key]);
+                return c;
             }
 
             List<ColumnDefinition> ret = new List<ColumnDefinition>();
@@ -206,11 +488,15 @@ namespace DatabaseConnector
                 {
                     ColumnDefinition def = new ColumnDefinition();
                     BuildColumn(rdr, def);
+                    def.ObjectServer = server;
+                    def.ObjectDatabase = database;
+                    def.ObjectType = "COLUMN";
                     ret.Add(def);
                 }
             }
             _columnCache.Add(key, ret);
-            return ret;
+            c.AddRange(ret);
+            return c;
         }
 
         public static List<Database> GetDatabases(string serverName)
@@ -245,6 +531,7 @@ namespace DatabaseConnector
 
         public static List<RoutineDefinition> GetRoutines(string server, string database)
         {
+            List<RoutineDefinition> c = new List<RoutineDefinition>();
             if (_routineCache == null)
             {
                 _routineCache = new Dictionary<string, List<RoutineDefinition>>();
@@ -253,7 +540,8 @@ namespace DatabaseConnector
             string key = server + "." + database;
             if (_routineCache.ContainsKey(key))
             {
-                return _routineCache[key];
+                c.AddRange(_routineCache[key]);
+                return c;
             }
 
             List<RoutineDefinition> ret = new List<RoutineDefinition>();
@@ -266,15 +554,20 @@ namespace DatabaseConnector
                 {
                     RoutineDefinition def = new RoutineDefinition();
                     BuildRoutine(rdr, def);
+                    def.ObjectServer = server;
+                    def.ObjectDatabase = database;
+                    def.ObjectType = "ROUTINE";
                     ret.Add(def);
                 }
             }
             _routineCache.Add(key, ret);
-            return ret;
+            c.AddRange(ret);
+            return c;
         }
 
         public static List<TableDefinition> GetTables(string server, string database)
         {
+            List<TableDefinition> c = new List<TableDefinition>();
             if (_tableCache == null)
             {
                 _tableCache = new Dictionary<string, List<TableDefinition>>();
@@ -283,7 +576,8 @@ namespace DatabaseConnector
             string key = server + "." + database;
             if (_tableCache.ContainsKey(key))
             {
-                return _tableCache[key];
+                c.AddRange(_tableCache[key]);
+                return c;
             }
 
             List<TableDefinition> ret = new List<TableDefinition>();
@@ -296,12 +590,16 @@ namespace DatabaseConnector
                 {
                     TableDefinition def = new TableDefinition();
                     BuildTable(rdr, def);
+                    def.ObjectServer = server;
+                    def.ObjectDatabase = database;
+                    def.ObjectType = "TABLE";
                     ret.Add(def);
                 }
 
             }
             _tableCache.Add(key, ret);
-            return ret;
+            c.AddRange(ret);
+            return c;
         }
 
         public static SqlConnection GetSqlConnection(string db, string serverName)
@@ -312,34 +610,74 @@ namespace DatabaseConnector
             return conn;
         }
 
-        public static List<SearchResult> Search(Database db, string queryString)
+        public static List<SearchResult> Search(Database db, string queryString, bool deep)
         {
             List<SearchResult> result = new List<SearchResult>();
             if (db != null && !string.IsNullOrEmpty(queryString) && !string.IsNullOrWhiteSpace(queryString))
             {
                 result = (from t in GetTables(db.Server, db.Name)
-                          where t.Name.ToUpper().Contains(queryString.ToUpper())
+                          where t.ObjectName.ToUpper().Contains(queryString.ToUpper())
                           select new SearchResult
                           {
                               Server = db.Server,
                               Database = db.Name,
                               QueryString = queryString,
-                              ObjectName = t.Name,
-                              ObjectType = t.Type
+                              ObjectName = t.ObjectName,
+                              ObjectSearchable = t.ObjectName,
+                              ObjectType = "TABLE",
+                              SearchableType = "NAME"
 
                           }).ToList();
 
                 result.AddRange((from c in GetColumns(db.Server, db.Name)
-                                where c.Name.ToUpper().Contains(queryString.ToUpper())
+                                where c.ObjectName.ToUpper().Contains(queryString.ToUpper())
                                 select new SearchResult
                                 {
                                     Server = db.Server,
                                     Database = db.Name,
                                     QueryString = queryString,
-                                    ObjectName = c.Table + "." + c.Name,
-                                    ObjectType = "COLUMN"
+                                    ObjectName = c.ObjectName,
+                                    ObjectSearchable = c.Table + "." + c.ObjectName,
+                                    ObjectType = "COLUMN",
+                                    SearchableType = "NAME"
 
                                 }).ToList());
+
+                var names = from r in GetRoutines(db.Server, db.Name)
+                            where r.ObjectName.ToUpper().Contains(queryString.ToUpper())
+                            select new SearchResult
+                            {
+                                Server = db.Server,
+                                Database = db.Name,
+                                QueryString = queryString,
+                                ObjectName = r.ObjectName,
+                                ObjectSearchable = r.ObjectName,
+                                ObjectType = "ZPROC",
+                                SearchableType = "ZPROC"
+                            };
+
+                if (deep)
+                {
+                    var texts = from r in GetRoutines(db.Server, db.Name)
+                                where r.Text.ToUpper().Contains(queryString.ToUpper())
+                                select new SearchResult
+                                {
+                                    Server = db.Server,
+                                    Database = db.Name,
+                                    QueryString = queryString,
+                                    ObjectName = r.ObjectName,
+                                    ObjectSearchable = r.Text,
+                                    ObjectType = "ZPROC",
+                                    SearchableType = "TEXT"
+                                };
+
+                    result.AddRange(names.Union(texts).OrderBy(r => r.ObjectName).ToList());
+                }
+                else
+                {
+                    result.AddRange(names.ToList());
+                }
+                
             }
             return result;
         }
@@ -385,6 +723,6 @@ namespace DatabaseConnector
             return false;
         }
 
-        
+        #endregion
     }
 }
