@@ -32,7 +32,7 @@
             this.txtOutput = new System.Windows.Forms.TextBox();
             this.btnAddServer = new System.Windows.Forms.Button();
             this.cboServers = new System.Windows.Forms.ComboBox();
-            this.button1 = new System.Windows.Forms.Button();
+            this.btnDeleteServer = new System.Windows.Forms.Button();
             this.pnlTop = new System.Windows.Forms.Panel();
             this.splitMain = new System.Windows.Forms.SplitContainer();
             this.splitDbSelector = new System.Windows.Forms.SplitContainer();
@@ -52,12 +52,12 @@
             this.tabCompare = new System.Windows.Forms.TabPage();
             this.txtComparResult = new System.Windows.Forms.RichTextBox();
             this.panel4 = new System.Windows.Forms.Panel();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.cboCompareDatabase = new System.Windows.Forms.ComboBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.chkCompareProcText = new System.Windows.Forms.CheckBox();
             this.cboCompareServer = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
             this.btnCompare = new System.Windows.Forms.Button();
-            this.cboCompareDatabase = new System.Windows.Forms.ComboBox();
-            this.label1 = new System.Windows.Forms.Label();
             this.pnlTop.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitMain)).BeginInit();
             this.splitMain.Panel1.SuspendLayout();
@@ -80,9 +80,10 @@
             // lblConnection
             // 
             this.lblConnection.AutoSize = true;
+            this.lblConnection.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblConnection.Location = new System.Drawing.Point(16, 7);
             this.lblConnection.Name = "lblConnection";
-            this.lblConnection.Size = new System.Drawing.Size(103, 11);
+            this.lblConnection.Size = new System.Drawing.Size(75, 13);
             this.lblConnection.TabIndex = 1;
             this.lblConnection.Text = "Primary Server";
             // 
@@ -99,9 +100,10 @@
             // 
             // btnAddServer
             // 
-            this.btnAddServer.Location = new System.Drawing.Point(365, 25);
+            this.btnAddServer.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnAddServer.Location = new System.Drawing.Point(365, 23);
             this.btnAddServer.Name = "btnAddServer";
-            this.btnAddServer.Size = new System.Drawing.Size(84, 18);
+            this.btnAddServer.Size = new System.Drawing.Size(84, 24);
             this.btnAddServer.TabIndex = 6;
             this.btnAddServer.Text = "add";
             this.btnAddServer.UseVisualStyleBackColor = true;
@@ -109,26 +111,29 @@
             // 
             // cboServers
             // 
+            this.cboServers.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cboServers.FormattingEnabled = true;
             this.cboServers.Location = new System.Drawing.Point(16, 24);
             this.cboServers.Name = "cboServers";
-            this.cboServers.Size = new System.Drawing.Size(343, 19);
+            this.cboServers.Size = new System.Drawing.Size(343, 21);
             this.cboServers.TabIndex = 7;
             this.cboServers.SelectedIndexChanged += new System.EventHandler(this.cboServers_SelectedIndexChanged);
             // 
-            // button1
+            // btnDeleteServer
             // 
-            this.button1.Location = new System.Drawing.Point(454, 25);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(84, 18);
-            this.button1.TabIndex = 8;
-            this.button1.Text = "delete";
-            this.button1.UseVisualStyleBackColor = true;
+            this.btnDeleteServer.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnDeleteServer.Location = new System.Drawing.Point(454, 23);
+            this.btnDeleteServer.Name = "btnDeleteServer";
+            this.btnDeleteServer.Size = new System.Drawing.Size(84, 24);
+            this.btnDeleteServer.TabIndex = 8;
+            this.btnDeleteServer.Text = "delete";
+            this.btnDeleteServer.UseVisualStyleBackColor = true;
+            this.btnDeleteServer.Click += new System.EventHandler(this.btnDeleteServer_Click);
             // 
             // pnlTop
             // 
             this.pnlTop.Controls.Add(this.cboServers);
-            this.pnlTop.Controls.Add(this.button1);
+            this.pnlTop.Controls.Add(this.btnDeleteServer);
             this.pnlTop.Controls.Add(this.lblConnection);
             this.pnlTop.Controls.Add(this.btnAddServer);
             this.pnlTop.Dock = System.Windows.Forms.DockStyle.Top;
@@ -195,9 +200,8 @@
             this.lbDatabases.BackColor = System.Drawing.SystemColors.Control;
             this.lbDatabases.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.lbDatabases.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lbDatabases.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbDatabases.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbDatabases.FormattingEnabled = true;
-            this.lbDatabases.ItemHeight = 11;
             this.lbDatabases.Location = new System.Drawing.Point(5, 36);
             this.lbDatabases.Name = "lbDatabases";
             this.lbDatabases.SelectionMode = System.Windows.Forms.SelectionMode.MultiSimple;
@@ -221,10 +225,10 @@
             this.chkDatabasesSelectAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.chkDatabasesSelectAll.AutoSize = true;
             this.chkDatabasesSelectAll.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.chkDatabasesSelectAll.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chkDatabasesSelectAll.Location = new System.Drawing.Point(146, 13);
+            this.chkDatabasesSelectAll.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.chkDatabasesSelectAll.Location = new System.Drawing.Point(170, 13);
             this.chkDatabasesSelectAll.Name = "chkDatabasesSelectAll";
-            this.chkDatabasesSelectAll.Size = new System.Drawing.Size(94, 15);
+            this.chkDatabasesSelectAll.Size = new System.Drawing.Size(70, 17);
             this.chkDatabasesSelectAll.TabIndex = 5;
             this.chkDatabasesSelectAll.Text = "Select All";
             this.chkDatabasesSelectAll.UseVisualStyleBackColor = true;
@@ -235,7 +239,7 @@
             this.tabContext.Controls.Add(this.tabSearch);
             this.tabContext.Controls.Add(this.tabCompare);
             this.tabContext.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabContext.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tabContext.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tabContext.Location = new System.Drawing.Point(0, 0);
             this.tabContext.Name = "tabContext";
             this.tabContext.SelectedIndex = 0;
@@ -246,10 +250,10 @@
             // 
             this.tabSearch.Controls.Add(this.pnlSearchControls);
             this.tabSearch.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tabSearch.Location = new System.Drawing.Point(4, 21);
+            this.tabSearch.Location = new System.Drawing.Point(4, 22);
             this.tabSearch.Name = "tabSearch";
             this.tabSearch.Padding = new System.Windows.Forms.Padding(3);
-            this.tabSearch.Size = new System.Drawing.Size(1003, 539);
+            this.tabSearch.Size = new System.Drawing.Size(1003, 538);
             this.tabSearch.TabIndex = 0;
             this.tabSearch.Text = "Search";
             this.tabSearch.UseVisualStyleBackColor = true;
@@ -263,7 +267,7 @@
             this.pnlSearchControls.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.pnlSearchControls.Location = new System.Drawing.Point(3, 3);
             this.pnlSearchControls.Name = "pnlSearchControls";
-            this.pnlSearchControls.Size = new System.Drawing.Size(997, 533);
+            this.pnlSearchControls.Size = new System.Drawing.Size(997, 532);
             this.pnlSearchControls.TabIndex = 7;
             this.pnlSearchControls.Visible = false;
             // 
@@ -273,7 +277,7 @@
             this.txtSearchResult.Location = new System.Drawing.Point(0, 60);
             this.txtSearchResult.Name = "txtSearchResult";
             this.txtSearchResult.ReadOnly = true;
-            this.txtSearchResult.Size = new System.Drawing.Size(997, 473);
+            this.txtSearchResult.Size = new System.Drawing.Size(997, 472);
             this.txtSearchResult.TabIndex = 6;
             this.txtSearchResult.Text = "";
             this.txtSearchResult.WordWrap = false;
@@ -294,9 +298,10 @@
             // chkText
             // 
             this.chkText.AutoSize = true;
+            this.chkText.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chkText.Location = new System.Drawing.Point(464, 27);
             this.chkText.Name = "chkText";
-            this.chkText.Size = new System.Drawing.Size(87, 15);
+            this.chkText.Size = new System.Drawing.Size(67, 17);
             this.chkText.TabIndex = 6;
             this.chkText.Text = "proc text";
             this.chkText.UseVisualStyleBackColor = true;
@@ -304,20 +309,20 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.Location = new System.Drawing.Point(12, 9);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(54, 11);
+            this.label2.Size = new System.Drawing.Size(44, 13);
             this.label2.TabIndex = 0;
             this.label2.Text = "Search ";
             // 
             // btnSearch
             // 
             this.btnSearch.Enabled = false;
-            this.btnSearch.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnSearch.Location = new System.Drawing.Point(364, 25);
+            this.btnSearch.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnSearch.Location = new System.Drawing.Point(364, 22);
             this.btnSearch.Name = "btnSearch";
-            this.btnSearch.Size = new System.Drawing.Size(84, 18);
+            this.btnSearch.Size = new System.Drawing.Size(84, 24);
             this.btnSearch.TabIndex = 2;
             this.btnSearch.Text = "search";
             this.btnSearch.UseVisualStyleBackColor = true;
@@ -325,10 +330,10 @@
             // 
             // txtSearch
             // 
-            this.txtSearch.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtSearch.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtSearch.Location = new System.Drawing.Point(15, 25);
             this.txtSearch.Name = "txtSearch";
-            this.txtSearch.Size = new System.Drawing.Size(343, 18);
+            this.txtSearch.Size = new System.Drawing.Size(343, 20);
             this.txtSearch.TabIndex = 1;
             this.txtSearch.TextChanged += new System.EventHandler(this.txtSearch_TextChanged);
             // 
@@ -337,10 +342,10 @@
             this.tabCompare.Controls.Add(this.txtComparResult);
             this.tabCompare.Controls.Add(this.panel4);
             this.tabCompare.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tabCompare.Location = new System.Drawing.Point(4, 21);
+            this.tabCompare.Location = new System.Drawing.Point(4, 22);
             this.tabCompare.Name = "tabCompare";
             this.tabCompare.Padding = new System.Windows.Forms.Padding(3);
-            this.tabCompare.Size = new System.Drawing.Size(1003, 539);
+            this.tabCompare.Size = new System.Drawing.Size(1003, 538);
             this.tabCompare.TabIndex = 1;
             this.tabCompare.Text = "Compare";
             this.tabCompare.UseVisualStyleBackColor = true;
@@ -351,7 +356,7 @@
             this.txtComparResult.Location = new System.Drawing.Point(3, 61);
             this.txtComparResult.Name = "txtComparResult";
             this.txtComparResult.ReadOnly = true;
-            this.txtComparResult.Size = new System.Drawing.Size(997, 475);
+            this.txtComparResult.Size = new System.Drawing.Size(997, 474);
             this.txtComparResult.TabIndex = 7;
             this.txtComparResult.Text = "";
             this.txtComparResult.WordWrap = false;
@@ -360,7 +365,7 @@
             // 
             this.panel4.Controls.Add(this.cboCompareDatabase);
             this.panel4.Controls.Add(this.label1);
-            this.panel4.Controls.Add(this.checkBox1);
+            this.panel4.Controls.Add(this.chkCompareProcText);
             this.panel4.Controls.Add(this.cboCompareServer);
             this.panel4.Controls.Add(this.label3);
             this.panel4.Controls.Add(this.btnCompare);
@@ -370,63 +375,66 @@
             this.panel4.Size = new System.Drawing.Size(997, 58);
             this.panel4.TabIndex = 1;
             // 
-            // checkBox1
+            // cboCompareDatabase
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(809, 30);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(87, 15);
-            this.checkBox1.TabIndex = 6;
-            this.checkBox1.Text = "proc text";
-            this.checkBox1.UseVisualStyleBackColor = true;
+            this.cboCompareDatabase.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cboCompareDatabase.FormattingEnabled = true;
+            this.cboCompareDatabase.Location = new System.Drawing.Point(368, 26);
+            this.cboCompareDatabase.Name = "cboCompareDatabase";
+            this.cboCompareDatabase.Size = new System.Drawing.Size(343, 21);
+            this.cboCompareDatabase.TabIndex = 7;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(366, 9);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(98, 13);
+            this.label1.TabIndex = 8;
+            this.label1.Text = "Compare Database";
+            // 
+            // chkCompareProcText
+            // 
+            this.chkCompareProcText.AutoSize = true;
+            this.chkCompareProcText.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.chkCompareProcText.Location = new System.Drawing.Point(809, 28);
+            this.chkCompareProcText.Name = "chkCompareProcText";
+            this.chkCompareProcText.Size = new System.Drawing.Size(67, 17);
+            this.chkCompareProcText.TabIndex = 6;
+            this.chkCompareProcText.Text = "proc text";
+            this.chkCompareProcText.UseVisualStyleBackColor = true;
             // 
             // cboCompareServer
             // 
+            this.cboCompareServer.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cboCompareServer.FormattingEnabled = true;
             this.cboCompareServer.Location = new System.Drawing.Point(14, 26);
             this.cboCompareServer.Name = "cboCompareServer";
-            this.cboCompareServer.Size = new System.Drawing.Size(343, 19);
+            this.cboCompareServer.Size = new System.Drawing.Size(343, 21);
             this.cboCompareServer.TabIndex = 0;
             this.cboCompareServer.SelectedIndexChanged += new System.EventHandler(this.cboCompareServer_SelectedIndexChanged);
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label3.Location = new System.Drawing.Point(12, 9);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(103, 11);
+            this.label3.Size = new System.Drawing.Size(83, 13);
             this.label3.TabIndex = 0;
             this.label3.Text = "Compare Server";
             // 
             // btnCompare
             // 
-            this.btnCompare.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnCompare.Location = new System.Drawing.Point(717, 27);
+            this.btnCompare.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnCompare.Location = new System.Drawing.Point(717, 25);
             this.btnCompare.Name = "btnCompare";
-            this.btnCompare.Size = new System.Drawing.Size(84, 18);
+            this.btnCompare.Size = new System.Drawing.Size(84, 24);
             this.btnCompare.TabIndex = 2;
             this.btnCompare.Text = "compare";
             this.btnCompare.UseVisualStyleBackColor = true;
             this.btnCompare.Click += new System.EventHandler(this.btnCompare_Click);
-            // 
-            // cboCompareDatabase
-            // 
-            this.cboCompareDatabase.FormattingEnabled = true;
-            this.cboCompareDatabase.Location = new System.Drawing.Point(368, 26);
-            this.cboCompareDatabase.Name = "cboCompareDatabase";
-            this.cboCompareDatabase.Size = new System.Drawing.Size(343, 19);
-            this.cboCompareDatabase.TabIndex = 7;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(366, 9);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(117, 11);
-            this.label1.TabIndex = 8;
-            this.label1.Text = "Compare Database";
             // 
             // Main
             // 
@@ -470,7 +478,7 @@
         private System.Windows.Forms.TextBox txtOutput;
         private System.Windows.Forms.Button btnAddServer;
         private System.Windows.Forms.ComboBox cboServers;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button btnDeleteServer;
         private System.Windows.Forms.Panel pnlTop;
         private System.Windows.Forms.SplitContainer splitMain;
         private System.Windows.Forms.TabControl tabContext;
@@ -491,7 +499,7 @@
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.RichTextBox txtComparResult;
         private System.Windows.Forms.Panel panel4;
-        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.CheckBox chkCompareProcText;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button btnCompare;
         private System.Windows.Forms.ComboBox cboCompareDatabase;

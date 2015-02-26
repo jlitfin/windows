@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DatabaseConnector
 {
-    public class Database
+    public class Database : IComparable
     {
         public Database()
         {
@@ -20,13 +20,23 @@ namespace DatabaseConnector
         public int Id { get; set; }
         public string Name { get; set; }
         public string Server { get; set; }
-        public List<TableDefinition> Tables { get; set; }
-        public List<ColumnDefinition> Columns { get; set; }
-        public List<RoutineDefinition> Routines { get; set; }
 
         public override string ToString()
         {
             return Name;
+        }
+
+        int IComparable.CompareTo(object obj)
+        {
+            Database d = obj as Database;
+            if (d != null)
+            {
+                return string.Compare(this.Name, d.Name);
+            }
+            else
+            {
+                throw new ArgumentException("Not a valid database object");
+            }
         }
     }
 }

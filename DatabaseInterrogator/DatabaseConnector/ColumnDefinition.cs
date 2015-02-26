@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DatabaseConnector
 {
-    public class ColumnDefinition : DatabaseObject, IComparable
+    public class ColumnDefinition : DatabaseObject
     {
         public string Catalog { get; set; }
         public string Schema { get; set; }
@@ -19,20 +19,6 @@ namespace DatabaseConnector
             {
                 return Table + "." + ObjectName;
             }
-        }
-
-        int IComparable.CompareTo(object def)
-        {
-            ColumnDefinition d = def as ColumnDefinition;
-            if (d != null)
-            {
-                return string.Compare(this.ObjectName, d.ObjectName);
-            }
-            else
-            {
-                throw new ArgumentException("Not a valid ColumnDefinition.");
-            }
-            
         }
     }
 }

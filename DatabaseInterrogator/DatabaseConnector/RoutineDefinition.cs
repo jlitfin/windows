@@ -6,23 +6,17 @@ using System.Threading.Tasks;
 
 namespace DatabaseConnector
 {
-    public class RoutineDefinition : DatabaseObject, IComparable
+    public class RoutineDefinition : DatabaseObject
     {
         public string Catalog { get; set; }
         public string Schema { get; set; }
         public string Text { get; set; }
         public string RoutineType { get; set; }
-
-        int IComparable.CompareTo(object def)
+        public override string ObjectId
         {
-            RoutineDefinition d = def as RoutineDefinition;
-            if (d != null)
+            get
             {
-                return string.Compare(this.ObjectName, d.ObjectName);
-            }
-            else
-            {
-                throw new ArgumentException("Not a valid RoutineDefinition");
+                return ObjectName;
             }
         }
     }

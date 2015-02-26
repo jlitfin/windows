@@ -226,20 +226,9 @@ namespace DatabaseInterrogator
             {
                 var server = this.cboServers.SelectedItem.ToString();
                 if (server.Equals(Repository.SERVER_LIST_DEFAULT_VALUE)) return;
-
+                updateDbList(server);
                 log(string.Format("querying server {0}...", server), false);
-                var dblist = Repository.GetDatabases(server);
-                if (dblist != null && dblist.Count > 0)
-                {
-                    this.lbDatabases.Items.Clear();
-                    this.lbDatabases.Items.AddRange(dblist.ToArray());
-                    this.pnlSearchControls.Visible = true;
-                    this.btnSearch.Enabled = false;
-                }
-                else
-                {
-                    this.pnlSearchControls.Visible = false;
-                }
+
                 log("done.", true);
             }
             catch (Exception ex)
@@ -300,6 +289,27 @@ namespace DatabaseInterrogator
             this.cboCompareServer.Items.Clear();
             this.cboCompareServer.Items.AddRange(Repository.ServerList.ToArray());
             this.cboCompareServer.SelectedIndex = 0;
+
+            this.lbDatabases.Items.Clear();
+        }
+
+        private void updateDbList(string server)
+        {
+            var dblist = Repository.GetDatabases(server);
+            dblist.Sort();
+            if (dblist != null && dblist.Count > 0)
+            {
+                this.lbDatabases.Items.Clear();
+                this.lbDatabases.Items.AddRange(dblist.ToArray());
+                this.pnlSearchControls.Visible = true;
+                this.btnSearch.Enabled = false;
+                this.chkDatabasesSelectAll.Visible = true;
+            }
+            else
+            {
+                this.pnlSearchControls.Visible = false;
+                this.chkDatabasesSelectAll.Visible = false;
+            }
         }
 
         private void lbDatabases_SelectedIndexChanged(object sender, EventArgs e)
@@ -358,7 +368,7 @@ namespace DatabaseInterrogator
                     string sdb = this.cboCompareDatabase.SelectedItem.ToString();
 
                     log(string.Format("comparing {0}.{1} with {2}.{1} ...", primary, pdb, secondary));
-                    List<CompareResult> list = Repository.Compare(primary, secondary, pdb, sdb);
+                    List<CompareResult> list = Repository.Compare(primary, secondary, pdb, sdb, chkCompareProcText.Checked);
                     log("done.", true);
                     displayCompareResult(list);
                 }
@@ -387,6 +397,7 @@ namespace DatabaseInterrogator
 
                 log(string.Format("querying server {0}...", server), false);
                 var dblist = Repository.GetDatabases(server);
+                dblist.Sort();
                 if (dblist != null && dblist.Count > 0)
                 {
                     this.cboCompareDatabase.Items.Clear();
@@ -404,11 +415,31 @@ namespace DatabaseInterrogator
             }
         }
 
+        private void btnDeleteServer_Click(object sender, EventArgs e)
+        {
+            if (!this.cboServers.SelectedItem.ToString().Equals(Repository.SERVER_LIST_DEFAULT_VALUE))
+            {
+                DialogResult dr = MessageBox.Show(
+                    string.Format("Really delete this server? {0}", this.cboServers.SelectedItem.ToString()),
+                    "Confirm Delete",
+                    MessageBoxButtons.OKCancel);
+
+                if (dr == DialogResult.OK)
+                {
+                    Repository.DeleteServer(this.cboServers.SelectedItem.ToString());
+                    updateServersList();
+                }
+            }
+        }
+
         #endregion
 
         
 
-        
+
+
+
+
 
 
 

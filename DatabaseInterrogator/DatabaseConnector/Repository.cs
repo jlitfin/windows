@@ -366,6 +366,113 @@ namespace DatabaseConnector
             return EvaluateTableDiffs(request, pt, st);
         }
 
+        private static List<CompareResult> EvaluateRoutineDiffs(CompareRequest request, List<RoutineDefinition> primary, List<RoutineDefinition> secondary, bool deep)
+        {
+            List<CompareResult> list = new List<CompareResult>();
+            for (int i = 0; i < primary.Count; ++i)
+            {
+                if (primary[i] == null)
+                {
+                    CompareResult r = new CompareResult
+                    {
+                        ComparisonType = "ROUTINE",
+                        ObjectName = string.Empty,
+                        ObjectType = string.Empty,
+                        ObjectId = string.Empty,
+                        ObjectDatabase = request.PrimaryDatabase,
+                        ObjectServer = request.PrimaryServer,
+                        CompareStatus = "MISSING",
+                        CompareObjectName = secondary[i].ObjectName,
+                        CompareObjectType = secondary[i].ObjectType,
+                        CompareObjectId = secondary[i].ObjectId,
+                        CompareDatabase = secondary[i].ObjectDatabase,
+                        CompareServer = secondary[i].ObjectServer
+                    };
+                    list.Add(r);
+                }
+                else if (secondary[i] == null)
+                {
+                    CompareResult r = new CompareResult
+                    {
+                        ComparisonType = "ROUTINE",
+                        ObjectName = primary[i].ObjectName,
+                        ObjectType = primary[i].ObjectType,
+                        ObjectId = primary[i].ObjectId,
+                        ObjectDatabase = primary[i].ObjectDatabase,
+                        ObjectServer = primary[i].ObjectServer,
+                        CompareStatus = "MISSING",
+                        CompareObjectName = string.Empty,
+                        CompareObjectType = string.Empty,
+                        CompareObjectId = string.Empty,
+                        CompareDatabase = request.SecondaryDatabase,
+                        CompareServer = request.SecondaryServer
+                    };
+                    list.Add(r);
+                }
+                else if (deep && !primary[i].Text.Equals(secondary[i].Text))
+                {
+                    CompareResult r = new CompareResult
+                    {
+                        ComparisonType = "ROUTINE TEXT",
+                        ObjectName = primary[i].ObjectName,
+                        ObjectType = primary[i].ObjectType,
+                        ObjectId = primary[i].ObjectId,
+                        ObjectDatabase = primary[i].ObjectDatabase,
+                        ObjectServer = primary[i].ObjectServer,
+                        CompareStatus = "DIFF",
+                        CompareObjectName = secondary[i].ObjectName,
+                        CompareObjectType = secondary[i].ObjectType,
+                        CompareObjectId = secondary[i].ObjectId,
+                        CompareDatabase = request.SecondaryDatabase,
+                        CompareServer = request.SecondaryServer
+                    };
+                    list.Add(r);
+                }
+            }
+
+            return list;
+        }
+
+        private static List<CompareResult> CompareRoutines(CompareRequest request, Database primary, Database secondary, bool deep)
+        {
+            List<CompareResult> list = new List<CompareResult>();
+            var pr = GetRoutines(primary.Server, primary.Name);
+            var sr = GetRoutines(secondary.Server, secondary.Name);
+            pr.Sort();
+            sr.Sort();
+            int i = 0;
+            while (true)
+            {
+                if (i < pr.Count && i < sr.Count)
+                {
+                    int c = string.Compare(pr[i].ObjectName, sr[i].ObjectName);
+                    if (c > 0)
+                    {
+                        pr.Insert(i, null);
+                    }
+                    else if (c < 0)
+                    {
+                        sr.Insert(i, null);
+                    }
+                }
+                else if (i >= pr.Count && i < sr.Count)
+                {
+                    pr.Add(null);
+                }
+                else if (i < pr.Count && i >= sr.Count)
+                {
+                    sr.Add(null);
+                }
+                else
+                {
+                    break;
+                }
+                ++i;
+            }
+
+            return EvaluateRoutineDiffs(request, pr, sr, deep);
+        }
+
         private static Database GetDatabase(string server, string database)
         {
             List<Database> list = GetDatabases(server);
@@ -414,6 +521,16 @@ namespace DatabaseConnector
             }
         }
 
+        public static void DeleteServer(string serverName)
+        {
+            serverName = serverName.ToUpper();
+            if (_serverList.ContainsKey(serverName))
+            {
+                _serverList.Remove(serverName);
+                WriteServerList();
+            }
+        }
+
         public static List<CompareResult> Compare(string primaryServer, string secondaryServer, string primaryDb, string secondaryDb, bool deep = false)
         {
             List<CompareResult> list = new List<CompareResult>();
@@ -430,6 +547,7 @@ namespace DatabaseConnector
                 };
 
                 list = CompareTables(r, primary, secondary);
+                list.AddRange(CompareRoutines(r, primary, secondary, deep));
             }
             else
             {
@@ -452,15 +570,6 @@ namespace DatabaseConnector
             }
             
             return list;
-        }
-
-        public static void DeleteServer(string serverName)
-        {
-            if (_serverList.ContainsKey(serverName))
-            {
-                _serverList.Remove(serverName);
-                WriteServerList();
-            }
         }
 
         public static List<ColumnDefinition> GetColumns(string server, string database)
