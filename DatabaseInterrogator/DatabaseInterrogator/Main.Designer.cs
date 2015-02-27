@@ -39,7 +39,6 @@
             this.panel2 = new System.Windows.Forms.Panel();
             this.lbDatabases = new System.Windows.Forms.ListBox();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.chkDatabasesSelectAll = new System.Windows.Forms.CheckBox();
             this.tabContext = new System.Windows.Forms.TabControl();
             this.tabSearch = new System.Windows.Forms.TabPage();
             this.pnlSearchControls = new System.Windows.Forms.Panel();
@@ -58,6 +57,8 @@
             this.cboCompareServer = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
             this.btnCompare = new System.Windows.Forms.Button();
+            this.btnDeselectAllDbs = new System.Windows.Forms.Button();
+            this.btnSelectAll = new System.Windows.Forms.Button();
             this.pnlTop.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitMain)).BeginInit();
             this.splitMain.Panel1.SuspendLayout();
@@ -90,7 +91,7 @@
             // txtOutput
             // 
             this.txtOutput.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtOutput.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtOutput.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtOutput.Location = new System.Drawing.Point(0, 0);
             this.txtOutput.Multiline = true;
             this.txtOutput.Name = "txtOutput";
@@ -137,7 +138,7 @@
             this.pnlTop.Controls.Add(this.lblConnection);
             this.pnlTop.Controls.Add(this.btnAddServer);
             this.pnlTop.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlTop.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.pnlTop.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.pnlTop.Location = new System.Drawing.Point(0, 0);
             this.pnlTop.Name = "pnlTop";
             this.pnlTop.Size = new System.Drawing.Size(1276, 61);
@@ -146,7 +147,7 @@
             // splitMain
             // 
             this.splitMain.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitMain.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.splitMain.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.splitMain.Location = new System.Drawing.Point(0, 61);
             this.splitMain.Name = "splitMain";
             this.splitMain.Orientation = System.Windows.Forms.Orientation.Horizontal;
@@ -165,7 +166,7 @@
             // splitDbSelector
             // 
             this.splitDbSelector.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitDbSelector.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.splitDbSelector.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.splitDbSelector.Location = new System.Drawing.Point(0, 0);
             this.splitDbSelector.Name = "splitDbSelector";
             // 
@@ -173,6 +174,7 @@
             // 
             this.splitDbSelector.Panel1.BackColor = System.Drawing.SystemColors.Control;
             this.splitDbSelector.Panel1.Controls.Add(this.panel2);
+            this.splitDbSelector.Panel1MinSize = 250;
             // 
             // splitDbSelector.Panel2
             // 
@@ -189,7 +191,9 @@
             this.panel2.Controls.Add(this.lbDatabases);
             this.panel2.Controls.Add(this.panel1);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.panel2.Location = new System.Drawing.Point(0, 0);
+            this.panel2.MinimumSize = new System.Drawing.Size(250, 0);
             this.panel2.Name = "panel2";
             this.panel2.Padding = new System.Windows.Forms.Padding(5);
             this.panel2.Size = new System.Drawing.Size(257, 564);
@@ -212,27 +216,14 @@
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.SystemColors.Control;
-            this.panel1.Controls.Add(this.chkDatabasesSelectAll);
+            this.panel1.Controls.Add(this.btnSelectAll);
+            this.panel1.Controls.Add(this.btnDeselectAllDbs);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel1.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.panel1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.panel1.Location = new System.Drawing.Point(5, 5);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(243, 31);
             this.panel1.TabIndex = 0;
-            // 
-            // chkDatabasesSelectAll
-            // 
-            this.chkDatabasesSelectAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.chkDatabasesSelectAll.AutoSize = true;
-            this.chkDatabasesSelectAll.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.chkDatabasesSelectAll.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chkDatabasesSelectAll.Location = new System.Drawing.Point(170, 13);
-            this.chkDatabasesSelectAll.Name = "chkDatabasesSelectAll";
-            this.chkDatabasesSelectAll.Size = new System.Drawing.Size(70, 17);
-            this.chkDatabasesSelectAll.TabIndex = 5;
-            this.chkDatabasesSelectAll.Text = "Select All";
-            this.chkDatabasesSelectAll.UseVisualStyleBackColor = true;
-            this.chkDatabasesSelectAll.CheckedChanged += new System.EventHandler(this.chkDatabasesSelectAll_CheckedChanged);
             // 
             // tabContext
             // 
@@ -249,7 +240,7 @@
             // tabSearch
             // 
             this.tabSearch.Controls.Add(this.pnlSearchControls);
-            this.tabSearch.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tabSearch.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tabSearch.Location = new System.Drawing.Point(4, 22);
             this.tabSearch.Name = "tabSearch";
             this.tabSearch.Padding = new System.Windows.Forms.Padding(3);
@@ -264,7 +255,7 @@
             this.pnlSearchControls.Controls.Add(this.txtSearchResult);
             this.pnlSearchControls.Controls.Add(this.pnlSearcTabTop);
             this.pnlSearchControls.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlSearchControls.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.pnlSearchControls.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.pnlSearchControls.Location = new System.Drawing.Point(3, 3);
             this.pnlSearchControls.Name = "pnlSearchControls";
             this.pnlSearchControls.Size = new System.Drawing.Size(997, 532);
@@ -274,6 +265,7 @@
             // txtSearchResult
             // 
             this.txtSearchResult.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtSearchResult.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtSearchResult.Location = new System.Drawing.Point(0, 60);
             this.txtSearchResult.Name = "txtSearchResult";
             this.txtSearchResult.ReadOnly = true;
@@ -290,6 +282,7 @@
             this.pnlSearcTabTop.Controls.Add(this.btnSearch);
             this.pnlSearcTabTop.Controls.Add(this.txtSearch);
             this.pnlSearcTabTop.Dock = System.Windows.Forms.DockStyle.Top;
+            this.pnlSearcTabTop.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.pnlSearcTabTop.Location = new System.Drawing.Point(0, 0);
             this.pnlSearcTabTop.Name = "pnlSearcTabTop";
             this.pnlSearcTabTop.Size = new System.Drawing.Size(997, 60);
@@ -341,7 +334,7 @@
             // 
             this.tabCompare.Controls.Add(this.txtComparResult);
             this.tabCompare.Controls.Add(this.panel4);
-            this.tabCompare.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tabCompare.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tabCompare.Location = new System.Drawing.Point(4, 22);
             this.tabCompare.Name = "tabCompare";
             this.tabCompare.Padding = new System.Windows.Forms.Padding(3);
@@ -353,6 +346,7 @@
             // txtComparResult
             // 
             this.txtComparResult.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtComparResult.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtComparResult.Location = new System.Drawing.Point(3, 61);
             this.txtComparResult.Name = "txtComparResult";
             this.txtComparResult.ReadOnly = true;
@@ -370,6 +364,7 @@
             this.panel4.Controls.Add(this.label3);
             this.panel4.Controls.Add(this.btnCompare);
             this.panel4.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.panel4.Location = new System.Drawing.Point(3, 3);
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(997, 58);
@@ -436,6 +431,31 @@
             this.btnCompare.UseVisualStyleBackColor = true;
             this.btnCompare.Click += new System.EventHandler(this.btnCompare_Click);
             // 
+            // btnDeselectAllDbs
+            // 
+            this.btnDeselectAllDbs.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnDeselectAllDbs.Location = new System.Drawing.Point(3, 3);
+            this.btnDeselectAllDbs.Name = "btnDeselectAllDbs";
+            this.btnDeselectAllDbs.Size = new System.Drawing.Size(106, 23);
+            this.btnDeselectAllDbs.TabIndex = 6;
+            this.btnDeselectAllDbs.Text = " deselect all";
+            this.btnDeselectAllDbs.UseVisualStyleBackColor = true;
+            this.btnDeselectAllDbs.Visible = false;
+            this.btnDeselectAllDbs.Click += new System.EventHandler(this.btnDeselectAllDbs_Click);
+            // 
+            // btnSelectAll
+            // 
+            this.btnSelectAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSelectAll.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnSelectAll.Location = new System.Drawing.Point(134, 3);
+            this.btnSelectAll.Name = "btnSelectAll";
+            this.btnSelectAll.Size = new System.Drawing.Size(106, 23);
+            this.btnSelectAll.TabIndex = 7;
+            this.btnSelectAll.Text = " select all";
+            this.btnSelectAll.UseVisualStyleBackColor = true;
+            this.btnSelectAll.Visible = false;
+            this.btnSelectAll.Click += new System.EventHandler(this.btnSelectAll_Click);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -459,7 +479,6 @@
             this.splitDbSelector.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
             this.tabContext.ResumeLayout(false);
             this.tabSearch.ResumeLayout(false);
             this.pnlSearchControls.ResumeLayout(false);
@@ -487,7 +506,6 @@
         private System.Windows.Forms.Panel pnlSearchControls;
         private System.Windows.Forms.SplitContainer splitDbSelector;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.CheckBox chkDatabasesSelectAll;
         private System.Windows.Forms.ListBox lbDatabases;
         private System.Windows.Forms.Button btnSearch;
         private System.Windows.Forms.TextBox txtSearch;
@@ -504,5 +522,7 @@
         private System.Windows.Forms.Button btnCompare;
         private System.Windows.Forms.ComboBox cboCompareDatabase;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button btnDeselectAllDbs;
+        private System.Windows.Forms.Button btnSelectAll;
     }
 }

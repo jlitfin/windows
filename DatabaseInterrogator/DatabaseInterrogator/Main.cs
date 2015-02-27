@@ -78,7 +78,7 @@ namespace DatabaseInterrogator
             foreach (var n in indexes)
             {
                 this.txtSearchResult.Select(n, str.Length);
-                this.txtSearchResult.SelectionBackColor = Color.LightBlue;
+                this.txtSearchResult.SelectionBackColor = Color.Orange;
             }
             
             
@@ -167,6 +167,13 @@ namespace DatabaseInterrogator
                         c3 = (sr.Server.Length > c3) ? sr.Server.Length : c3;
                         c4 = (sr.Database.Length > c4) ? sr.Database.Length : c4;
                     }
+                    else
+                    {
+                        c1 = (sr.ObjectType.Length > c1) ? sr.ObjectType.Length : c1;
+                        c2 = (sr.ObjectName.Length > c2) ? sr.ObjectName.Length : c2;
+                        c3 = (sr.Server.Length > c3) ? sr.Server.Length : c3;
+                        c4 = (sr.Database.Length > c4) ? sr.Database.Length : c4;
+                    }
                 }
                 string format = "  {0, -" + (c1 + buffer).ToString() + "}{1, -" + (c2 + buffer).ToString() + "}{2, -" + (c3 + buffer).ToString() + "}{3, -" + (c3 + buffer).ToString() + "}\r\n";
                 this.txtSearchResult.AppendText(string.Format(format, "TYPE", "OBJECT", "SERVER", "DATABASE"));
@@ -179,7 +186,13 @@ namespace DatabaseInterrogator
                         displayText.AppendLine();
                         displayText.Append(string.Format(format, sr.ObjectType, sr.ObjectName, sr.Server, sr.Database));
                         StringBuilder txt = new StringBuilder();
-                        using (StreamReader rdr = new StreamReader(new MemoryStream(System.Text.Encoding.UTF8.GetBytes(sr.ObjectSearchable))))
+
+                        Encoder enc = Encoding.Default.GetEncoder();
+                        char[] chars = sr.ObjectSearchable.ToCharArray();
+                        int byteCount = enc.GetByteCount(chars, 0, chars.Length, true);
+                        byte[] bytes = new Byte[byteCount];
+                        enc.GetBytes(chars, 0, chars.Length, bytes, 0, true);
+                        using (StreamReader rdr = new StreamReader(new MemoryStream(bytes)))
                         {
                             txt.AppendLine();
                             string line = string.Empty;
@@ -258,11 +271,12 @@ namespace DatabaseInterrogator
                             {
                                 List<SearchResult> results = Repository.Search(db, this.txtSearch.Text, this.chkText.Checked);
                                 cumulative.AddRange(results);
-                                log(string.Format("located {0} possible objects.", results.Count), true);
+                                log(string.Format("located {0} results.", results.Count), true);
                             }
-                            catch
+                            catch (Exception ex)
                             {
-                                log(string.Format("could not connect to {0}", db.Name), true);
+                                log(string.Format("error communicating with db: {0}", db.Name), true);
+                                log(string.Format("{0}", ex.Message), true);
                             }
                         }
                     }
@@ -302,12 +316,14 @@ namespace DatabaseInterrogator
                 this.lbDatabases.Items.AddRange(dblist.ToArray());
                 this.pnlSearchControls.Visible = true;
                 this.btnSearch.Enabled = false;
-                this.chkDatabasesSelectAll.Visible = true;
+                this.btnSelectAll.Visible = true;
+                this.btnDeselectAllDbs.Visible = true;
             }
             else
             {
                 this.pnlSearchControls.Visible = false;
-                this.chkDatabasesSelectAll.Visible = false;
+                this.btnSelectAll.Visible = false;
+                this.btnDeselectAllDbs.Visible = false;
             }
         }
 
@@ -321,11 +337,6 @@ namespace DatabaseInterrogator
             {
                 this.btnSearch.Enabled = false;
             }
-
-            if (this.lbDatabases.SelectedItems.Count < this.lbDatabases.Items.Count)
-            {
-                this.chkDatabasesSelectAll.Checked = false;
-            }
         }
 
         private void txtSearch_TextChanged(object sender, EventArgs e)
@@ -337,17 +348,6 @@ namespace DatabaseInterrogator
             else
             {
                 this.btnSearch.Enabled = false;
-            }
-        }
-
-        private void chkDatabasesSelectAll_CheckedChanged(object sender, EventArgs e)
-        {
-            if (this.chkDatabasesSelectAll.Checked)
-            {
-                for (int i = 0; i < this.lbDatabases.Items.Count; ++i)
-                {
-                    this.lbDatabases.SetSelected(i, true);
-                }
             }
         }
 
@@ -431,9 +431,23 @@ namespace DatabaseInterrogator
             }
         }
 
-        #endregion
+        private void btnDeselectAllDbs_Click(object sender, EventArgs e)
+        {
+            for (int i = 0; i < this.lbDatabases.Items.Count; ++i)
+            {
+                this.lbDatabases.SetSelected(i, false);
+            }
+        }
 
-        
+        private void btnSelectAll_Click(object sender, EventArgs e)
+        {
+            for (int i = 0; i < this.lbDatabases.Items.Count; ++i)
+            {
+                this.lbDatabases.SetSelected(i, true);
+            }
+        }
+
+        #endregion
 
 
 
