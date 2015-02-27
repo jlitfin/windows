@@ -78,8 +78,7 @@ namespace DatabaseInterrogator
             foreach (var n in indexes)
             {
                 this.txtSearchResult.Select(n, str.Length);
-                this.txtSearchResult.SelectionBackColor = SystemColors.Highlight;
-                this.txtSearchResult.SelectionColor = SystemColors.HighlightText;
+                this.txtSearchResult.SelectionBackColor = Color.LightBlue;
             }
             
             
@@ -267,7 +266,7 @@ namespace DatabaseInterrogator
                             }
                         }
                     }
-                    displaySearchResult(cumulative.OrderBy(r => r.ObjectType).ToList());
+                    displaySearchResult(cumulative.OrderBy(r => r.ObjectType).ThenBy(r => r.ObjectSearchable).ToList());
                 }
                 catch (Exception ex)
                 {
