@@ -1,0 +1,56 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExifDiscover", "ExifDiscover\ExifDiscover.csproj", "{74EAFD79-1B78-4F70-B18D-6D860DD78E56}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomControls", "CustomControls\CustomControls.csproj", "{B28A09AF-7D42-46EA-891D-431DB21FE79B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjectModel", "ObjectModel\ObjectModel.csproj", "{E60DAB58-4D46-47D1-A2A0-1F0C0D39E2D5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess", "DataAccess\DataAccess.csproj", "{4ED93113-3F76-482B-A71C-908759434120}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{74EAFD79-1B78-4F70-B18D-6D860DD78E56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74EAFD79-1B78-4F70-B18D-6D860DD78E56}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74EAFD79-1B78-4F70-B18D-6D860DD78E56}.Debug|x86.ActiveCfg = Debug|x86
+		{74EAFD79-1B78-4F70-B18D-6D860DD78E56}.Debug|x86.Build.0 = Debug|x86
+		{74EAFD79-1B78-4F70-B18D-6D860DD78E56}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74EAFD79-1B78-4F70-B18D-6D860DD78E56}.Release|Any CPU.Build.0 = Release|Any CPU
+		{74EAFD79-1B78-4F70-B18D-6D860DD78E56}.Release|x86.ActiveCfg = Release|x86
+		{74EAFD79-1B78-4F70-B18D-6D860DD78E56}.Release|x86.Build.0 = Release|x86
+		{B28A09AF-7D42-46EA-891D-431DB21FE79B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B28A09AF-7D42-46EA-891D-431DB21FE79B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B28A09AF-7D42-46EA-891D-431DB21FE79B}.Debug|x86.ActiveCfg = Debug|x86
+		{B28A09AF-7D42-46EA-891D-431DB21FE79B}.Debug|x86.Build.0 = Debug|x86
+		{B28A09AF-7D42-46EA-891D-431DB21FE79B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B28A09AF-7D42-46EA-891D-431DB21FE79B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B28A09AF-7D42-46EA-891D-431DB21FE79B}.Release|x86.ActiveCfg = Release|x86
+		{B28A09AF-7D42-46EA-891D-431DB21FE79B}.Release|x86.Build.0 = Release|x86
+		{E60DAB58-4D46-47D1-A2A0-1F0C0D39E2D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E60DAB58-4D46-47D1-A2A0-1F0C0D39E2D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E60DAB58-4D46-47D1-A2A0-1F0C0D39E2D5}.Debug|x86.ActiveCfg = Debug|x86
+		{E60DAB58-4D46-47D1-A2A0-1F0C0D39E2D5}.Debug|x86.Build.0 = Debug|x86
+		{E60DAB58-4D46-47D1-A2A0-1F0C0D39E2D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E60DAB58-4D46-47D1-A2A0-1F0C0D39E2D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E60DAB58-4D46-47D1-A2A0-1F0C0D39E2D5}.Release|x86.ActiveCfg = Release|x86
+		{E60DAB58-4D46-47D1-A2A0-1F0C0D39E2D5}.Release|x86.Build.0 = Release|x86
+		{4ED93113-3F76-482B-A71C-908759434120}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4ED93113-3F76-482B-A71C-908759434120}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4ED93113-3F76-482B-A71C-908759434120}.Debug|x86.ActiveCfg = Debug|x86
+		{4ED93113-3F76-482B-A71C-908759434120}.Debug|x86.Build.0 = Debug|x86
+		{4ED93113-3F76-482B-A71C-908759434120}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4ED93113-3F76-482B-A71C-908759434120}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4ED93113-3F76-482B-A71C-908759434120}.Release|x86.ActiveCfg = Release|x86
+		{4ED93113-3F76-482B-A71C-908759434120}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

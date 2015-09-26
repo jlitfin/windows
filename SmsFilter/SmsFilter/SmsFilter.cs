@@ -211,11 +211,6 @@ namespace SmsFilter
             smsColl = SetAliases(smsColl, s1, s2, this.txtSpeakerOneAlias.Text, this.txtSpeakerTwoAlias.Text);
             smsColl = BuildMessageDates(file, smsColl);
             smsColl = BuildContent(file, smsColl);
-            foreach (var s in smsColl)
-            {
-                PrintF(string.Format("sender: {0}, start: {1}, date: {2}", s.Alias, s.StartIndex, s.DateString), true);
-                PrintF(string.Format("content: {0}", s.Content), true);
-            }
 
             return smsColl;
         }
@@ -384,6 +379,7 @@ namespace SmsFilter
             }
 
             this.txtResult.Text = BuildOutput(__messages, s.SpeakerOne, s.SpeakerTwo);
+            PrintF("Output complete.", true);
         }
 
 

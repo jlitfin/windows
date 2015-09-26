@@ -1,0 +1,30 @@
+Make                      [ASCII String     ] SONY                                              
+Model                     [ASCII String     ] CYBERSHOT                                         
+Orientation               [Unsigned Short   ] 01 00 
+XResolution               [Unsigned Rational] 0000000072 / 0000000001 = 72
+YResolution               [Unsigned Rational] 0000000072 / 0000000001 = 72
+ResolutionUnit            [Unsigned Short   ] 02 00 
+DateTime                  [ASCII String     ] 2005:02:04 00:41:39                               
+YCbCrPositioning          [Unsigned Short   ] 02 00 
+ExposureTime              [Unsigned Rational] 0000000010 / 0000000400 = 0.025
+FNumber                   [Unsigned Rational] 0000000020 / 0000000010 = 2
+ExposureProgram           [Unsigned Short   ] 02 00 
+ISOSpeedRatings           [Unsigned Short   ] 78 00 
+ExifVersion               [Undefined        ] 0210                                              
+DateTimeOriginal          [ASCII String     ] 2005:02:04 00:41:39                               
+DateTimeDigitized         [ASCII String     ] 2005:02:04 00:41:39                               
+ComponentsConfiguration   [Undefined        ]                                                
+CompressedBitsPerPixel    [Unsigned Rational] 0000000002 / 0000000001 = 2
+ExposureBiasValue         [Signed Rational  ] 00 00 00 00 0A 00 00 00 
+MaxApertureValue          [Unsigned Rational] 0000000020 / 0000000010 = 2
+MeteringMode              [Unsigned Short   ] 02 00 
+LightSource               [Unsigned Short   ] 00 00 
+Flash                     [Unsigned Short   ] 01 00 
+FocalLength               [Unsigned Rational] 0000000070 / 0000000010 = 7
+MakerNote                 [Undefined        ] SONY DSC fPrintIM0100                   
+FlashPixVersion           [Undefined        ] 0100                                              
+ColorSpace                [Unsigned Short   ] 01 00 
+ExifImageWidth            [Unsigned Short   ] 00 05 00 00 
+ExifImageHeight           [Unsigned Short   ] C0 03 00 00 
+FileSource                [Undefined        ]                                                  
+SceneType                 [Undefined        ]                                                  

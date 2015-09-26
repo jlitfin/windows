@@ -1,0 +1,87 @@
+010f Make                           ASCII String
+0110 Model                          ASCII String
+0112 Orientation                    Unsigned Short
+011a XResolution                    Unsigned Rational
+011b YResolution                    Unsigned Rational
+0128 ResolutionUnit                 Unsigned Short
+0131 Software                       ASCII String
+0132 DateTime                       ASCII String
+013e WhitePoint                     Unsigned Rational
+013f PrimaryChromaticities          Unsigned Rational
+0211 YCbCrCoefficients              Unsigned Rational
+0213 YCbCrPositioning               Unsigned Short
+0214 ReferenceBlackWhite            Unsigned Rational
+8298 Copyright                      ASCII String
+8769 ExifOffset                     Signed Long
+829a ExposureTime                   Unsigned Rational
+829d FNumber                        Unsigned Rational
+8822 ExposureProgram                Unsigned Short
+8827 ISOSpeedRatings                Unsigned Short
+9000 ExifVersion                    Undefined
+9003 DateTimeOriginal               ASCII String
+9004 DateTimeDigitized              ASCII String
+9101 ComponentsConfiguration        Undefined
+9102 CompressedBitsPerPixel         Unsigned Rational
+9201 ShutterSpeedValue              Signed Rational
+9202 ApertureValue                  Unsigned Rational
+9203 BrightnessValue                Signed Rational
+9204 ExposureBiasValue              Signed Rational
+9205 MaxApertureValue               Unsigned Rational
+9206 SubjectDistance                Signed Rational
+9207 MeteringMode                   Unsigned Short
+9208 LightSource                    Unsigned Short
+9209 Flash                          Unsigned Short
+920a FocalLength                    Unsigned Rational
+927c MakerNote                      Undefined
+9286 UserComment                    Unsigned Rational
+9290 SubsecTime                     ASCII String
+9291 SubsecTimeOriginal             ASCII String
+9292 SubsecTimeDigitized            ASCII String
+a000 FlashPixVersion                Undefined
+a001 ColorSpace                     Unsigned Short
+a002 ExifImageWidth                 Unsigned Short
+a003 ExifImageHeight                Unsigned Short
+a004 RelatedSoundFile               ASCII String
+a005 ExifInteroperabilityOffset     Unsigned Long
+a20e FocalPlaneXResolution          Unsigned Rational
+a20f FocalPlaneYResolution          Unsigned Rational
+a210 FocalPlaneResolutionUnit       Unsigned Short
+a215 ExposureIndex                  Unsigned Rational
+a217 SensingMethod                  Unsigned Short
+a300 FileSource                     Undefined
+a301 SceneType                      Undefined
+a302 CFAPattern                     Undefined
+00fe NewSubfileType                 Unsigned Long
+00ff SubfileType                    Unsigned Short
+012d TransferFunction               Unsigned Short
+013b Artist                         ASCII String
+013d Predictor                      Unsigned Short
+0142 TileWidth                      Unsigned Short
+0143 TileLength                     Unsigned Short
+0144 TileOffsets                    Unsigned Long
+0145 TileByteCounts                 Unsigned Short
+014a SubIFDs                        Unsigned Long
+015b JPEGTables                     Undefined
+828d CFARepeatPatternDim            Unsigned Short
+828e CFAPattern                     Unsigned Byte
+828f BatteryLevel                   Unsigned Rational
+83bb IPTC/NAA                       Unsigned Long
+8773 InterColorProfile              Undefined
+8824 SpectralSensitivity            ASCII String
+8825 GPSInfo                        Unsigned Long
+8828 OECF                           Undefined
+8829 Interlace                      Unsigned Short
+882a TimeZoneOffset                 Signed Short
+882b SelfTimerMode                  Unsigned Short
+920b FlashEnergy                    Unsigned Rational
+920c SpatialFrequencyResponse       Undefined
+920d Noise                          Undefined
+9211 ImageNumber                    Unsigned Long
+9212 SecurityClassification         ASCII String
+9213 ImageHistory                   ASCII String
+9214 SubjectLocation                Unsigned Short
+9215 ExposureIndex                  Unsigned Rational
+9216 TIFF/EPStandardID              Unsigned Byte
+a20b FlashEnergy                    Unsigned Rational
+a20c SpatialFrequencyResponse       Unsigned Short
+a214 SubjectLocation                Unsigned Short
