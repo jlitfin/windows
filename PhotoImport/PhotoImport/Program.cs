@@ -50,8 +50,8 @@ namespace PhotoImport
 
                 Spin("Process completed.");
                 PrintF();
-                PrintF(_fileCount.ToString() + " files processed.");
-                PrintF(_dupeErrorCount.ToString() + " duplicates.");
+                PrintF("  " + _fileCount.ToString() + " files processed.");
+                PrintF("  " + _dupeErrorCount.ToString() + " duplicates.");
 
                 if (_fileOpErrorCount > 0)
                 {
@@ -91,10 +91,12 @@ namespace PhotoImport
             Console.ForegroundColor = ConsoleColor.Red;
             PrintF(toPrint);
             PrintF("Press any key to continue processing, or 'q' to quit: ", false);
+            
             var info = Console.ReadKey();
+            Console.ForegroundColor = fg;
             if (info.Key == ConsoleKey.Q) Environment.Exit(1);
 
-            Console.ForegroundColor = fg;
+            
             PrintF();
 
         }
@@ -133,7 +135,7 @@ namespace PhotoImport
                         {
                             SourceDirectory = sourceDirectory.FullName,
                             SourceName = fileName.Substring(fileName.LastIndexOf("\\") + 1),
-                            TargetDirectory = sourceDirectory.Parent.FullName + "\\" + reader.GetPhotoDirectoryName(),
+                            TargetDirectory = _importDirectory.Parent.FullName + "\\" + reader.GetPhotoDirectoryName(),
                             TargetName = newName
                         };
 
@@ -212,7 +214,7 @@ namespace PhotoImport
 
                 foreach (var kv in dupeNames)
                 {
-                    var dupeDir = new DirectoryInfo(_importDirectory.FullName + "\\Duplicates");
+                    var dupeDir = new DirectoryInfo(_importDirectory.Parent.FullName + "\\0_Duplicates");
                     if (!dupeDir.Exists)
                     {
                         dupeDir.Create();
