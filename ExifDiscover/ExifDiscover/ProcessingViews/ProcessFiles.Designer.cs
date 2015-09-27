@@ -31,13 +31,13 @@ namespace ExifDiscover.ProcessingViews
             this.txtOutput = new System.Windows.Forms.TextBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.btnOneTime = new System.Windows.Forms.Button();
             this.btnDataManagement = new System.Windows.Forms.Button();
             this.btnMoveFiles = new System.Windows.Forms.Button();
             this.btnViewBadNames = new System.Windows.Forms.Button();
             this.btnProcessFiles = new System.Windows.Forms.Button();
             this.dlgBrowsForFolder = new System.Windows.Forms.FolderBrowserDialog();
             this.dlgOpenFile = new System.Windows.Forms.OpenFileDialog();
-            this.btnOneTime = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
@@ -76,6 +76,16 @@ namespace ExifDiscover.ProcessingViews
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(845, 77);
             this.panel2.TabIndex = 2;
+            // 
+            // btnOneTime
+            // 
+            this.btnOneTime.Location = new System.Drawing.Point(737, 12);
+            this.btnOneTime.Name = "btnOneTime";
+            this.btnOneTime.Size = new System.Drawing.Size(79, 53);
+            this.btnOneTime.TabIndex = 4;
+            this.btnOneTime.Text = "One Time";
+            this.btnOneTime.UseVisualStyleBackColor = true;
+            this.btnOneTime.Click += new System.EventHandler(this.btnOneTime_Click);
             // 
             // btnDataManagement
             // 
@@ -120,17 +130,6 @@ namespace ExifDiscover.ProcessingViews
             // dlgOpenFile
             // 
             this.dlgOpenFile.FileName = "openFileDialog1";
-            // 
-            // btnOneTime
-            // 
-            this.btnOneTime.Location = new System.Drawing.Point(737, 12);
-            this.btnOneTime.Name = "btnOneTime";
-            this.btnOneTime.Size = new System.Drawing.Size(79, 53);
-            this.btnOneTime.TabIndex = 4;
-            this.btnOneTime.Text = "One Time";
-            this.btnOneTime.UseVisualStyleBackColor = true;
-            this.btnOneTime.Visible = false;
-            this.btnOneTime.Click += new System.EventHandler(this.btnOneTime_Click);
             // 
             // ProcessFiles
             // 

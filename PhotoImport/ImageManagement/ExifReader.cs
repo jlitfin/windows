@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing.Imaging;
 using System.Drawing;
@@ -8,16 +8,14 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace ObjectModel
+namespace ImageManagement
 {
     public class ExifReader
     {
-        private static Bitmap __defaultDisplayImage;
-
         #region Private Members
 
-        private Image   __targetImage;
-        private string  __fileName;
+        private Image __targetImage;
+        private string __fileName;
         private Dictionary<int, ExifFieldFormat> __exifFieldFormats;
         private Dictionary<ushort, ExifField> __exifFields;
         private bool __hasExifData;
@@ -43,11 +41,6 @@ namespace ObjectModel
 
         public ExifReader(string fileName)
         {
-            if (ExifReader.__defaultDisplayImage == null)
-            {
-                //__defaultDisplayImage = new Bitmap(Constants.Resources.DefaultImagePath);
-            }
-
             __fileName = fileName;
             try
             {
@@ -60,8 +53,6 @@ namespace ObjectModel
             {
                 ErrorManager.Instance().Publish(ex.Message);
             }
-
-            Console.WriteLine("Leaving Const.");
         }
 
         #endregion
@@ -191,15 +182,15 @@ namespace ObjectModel
                     catch (Exception e)
                     {
                         ErrorManager.Instance().Publish(e.Message);
-                        return __defaultDisplayImage;
+                        return null;
                     }
                 }
                 else
                 {
                     Bitmap displayBitmap = new Bitmap(__targetImage, ImageWidth, ImageHeight);
                     return displayBitmap;
-                }              
-                
+                }
+
             }
         }
 
@@ -270,17 +261,48 @@ namespace ObjectModel
 
         public string GetPhotoFileName()
         {
+
             string name = string.Empty;
-            using (SHA1CryptoServiceProvider sha1 = new SHA1CryptoServiceProvider())
+            try
             {
-                var extension = __fileName.Substring(__fileName.LastIndexOf('.'));
-                var bytes = File.ReadAllBytes(__fileName);
-                var hash = Convert.ToBase64String(sha1.ComputeHash(bytes));
-                var exp = new Regex("[/]");
-                name = exp.Replace(hash, "_") + extension;
+                using (SHA1CryptoServiceProvider sha1 = new SHA1CryptoServiceProvider())
+                {
+                    var extension = __fileName.Substring(__fileName.LastIndexOf('.'));
+                    var bytes = File.ReadAllBytes(__fileName);
+                    var hash = Convert.ToBase64String(sha1.ComputeHash(bytes));
+                    var exp = new Regex("[/]");
+                    name = exp.Replace(hash, "_") + extension;
+                }
+            }
+            catch(Exception ex)
+            {
+                ErrorManager.Instance().Publish(string.Format("While Processing {0} Exception: {1}", __fileName, ex.Message));
             }
 
             return name;
+        }
+
+        public string GetPhotoDirectoryName()
+        {
+            StringBuilder sb = new StringBuilder();
+            if (HasExifInfo)
+            {
+                sb.Append(DateTimeTaken.Year.ToString());
+                sb.Append("-");
+                sb.Append(padDateInt(DateTimeTaken.Month));
+                sb.Append("-");
+                sb.Append(padDateInt(DateTimeTaken.Day));
+            }
+            else
+            {
+                sb.Append(DateTime.Now.Year.ToString());
+                sb.Append("-");
+                sb.Append(padDateInt(DateTime.Now.Month));
+                sb.Append("-");
+                sb.Append(padDateInt(DateTime.Now.Day));
+            }
+
+            return sb.ToString();
         }
 
         #endregion
@@ -959,6 +981,12 @@ namespace ObjectModel
             {
                 throw new Exception("Field Initialization Error: " + ex.Message);
             }
+        }
+
+        private string padDateInt(int i)
+        {
+            if (i > 9) return i.ToString();
+            return string.Format("0{0}", i);
         }
 
         private DateTime ParseDateTime(string dateString)
