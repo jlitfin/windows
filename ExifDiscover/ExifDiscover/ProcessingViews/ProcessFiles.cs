@@ -4,7 +4,9 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.IO;
+using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 using ObjectModel;
@@ -17,10 +19,20 @@ namespace ExifDiscover.ProcessingViews
         Dictionary<string, string> __newNames;
         Dictionary<string, string> __badNames;
         string __browsePath = string.Empty;
+        string __rememberedPath = string.Empty;
 
         public ProcessFiles()
         {
             InitializeComponent();
+
+            var fi = new FileInfo("settings.txt");
+            if (fi.Exists)
+            {
+                using (var sr = new StreamReader("settings.txt"))
+                {
+                    __rememberedPath = sr.ReadLine();
+                }
+            }
         }
 
         private List<string> GetWorkingFileList(string path, string filter)
@@ -64,10 +76,22 @@ namespace ExifDiscover.ProcessingViews
         private void btnProcessFiles_Click(object sender, EventArgs e)
         {
             dlgBrowsForFolder.ShowNewFolderButton = false;
+            if (!string.IsNullOrEmpty(__rememberedPath))
+            {
+                dlgBrowsForFolder.SelectedPath = __rememberedPath;
+            }
             DialogResult result = dlgBrowsForFolder.ShowDialog();
             if (result == DialogResult.OK)
             {
                 __browsePath = dlgBrowsForFolder.SelectedPath;
+                if (__browsePath != __rememberedPath)
+                {
+                    using (var sr = new StreamWriter("settings.txt"))
+                    {
+                        sr.WriteLine(__browsePath);
+                    }
+                    __rememberedPath = __browsePath;
+                }
                 List<string> fileList = GetWorkingFileList(__browsePath, "*.*");
                 __newNames = new Dictionary<string, string>();
                 __badNames = new Dictionary<string, string>();
@@ -186,11 +210,22 @@ namespace ExifDiscover.ProcessingViews
                         // create the folder name required for this new photo
                         //
                         StringBuilder sb = new StringBuilder();
-                        sb.Append(reader.DateTimeTaken.Year.ToString());
-                        sb.Append("-");
-                        sb.Append(padDateInt(reader.DateTimeTaken.Month));
-                        sb.Append("-");
-                        sb.Append(padDateInt(reader.DateTimeTaken.Day));
+                        if (reader.HasExifInfo)
+                        {
+                            sb.Append(reader.DateTimeTaken.Year.ToString());
+                            sb.Append("-");
+                            sb.Append(padDateInt(reader.DateTimeTaken.Month));
+                            sb.Append("-");
+                            sb.Append(padDateInt(reader.DateTimeTaken.Day));
+                        }
+                        else
+                        {
+                            sb.Append(DateTime.Now.Year.ToString());
+                            sb.Append("-");
+                            sb.Append(padDateInt(DateTime.Now.Month));
+                            sb.Append("-");
+                            sb.Append(padDateInt(DateTime.Now.Day));
+                        }
 
                         DirectoryInfo browseDir = new DirectoryInfo(__browsePath);
                         DirectoryInfo targetDir = new DirectoryInfo(browseDir.Parent.FullName);
@@ -224,26 +259,71 @@ namespace ExifDiscover.ProcessingViews
 
         private void btnOneTime_Click(object sender, EventArgs e)
         {
-            var path = @"C:\Users\jlitfin\Pictures\Photos\";
+            var path = @"C:\Users\jlitfin\Pictures\Photos Backup\";
             var root = new DirectoryInfo(path);
+            var temp = new DirectoryInfo(@"C:\Users\jlitfin\Pictures\Rename\");
+            var dupes = new DirectoryInfo(@"C:\Users\jlitfin\Pictures\Dupes\");
+            var video = new DirectoryInfo(@"C:\Users\jlitfin\Pictures\Video\");
+            temp.Create();
+            dupes.Create();
+            video.Create();
 
             var dirs = root.GetDirectories();
             for (int i = 0; i < dirs.Length; ++i)
             {
-                var newDirName = string.Empty;
-                if (dirs[i].Name.Contains("-"))
+                
+                var files = dirs[i].GetFiles();
+                PrintF(string.Format("Directory {0} of {1} : {2} : {3} files", i.ToString().PadLeft(4, ' '), dirs.Length, dirs[i].Name.PadLeft(15, ' '), files.Length), true);
+                foreach (var file in files)
                 {
-                    var arr = dirs[i].Name.Split('-');
-                    if (arr.Length == 3)
+                    string extension = file.Name.Substring(file.Name.LastIndexOf('.'));
+                    if (file.Name.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) || file.Name.EndsWith(".bmp", StringComparison.OrdinalIgnoreCase) ||
+                        file.Name.EndsWith(".gif", StringComparison.OrdinalIgnoreCase) || file.Name.EndsWith(".png", StringComparison.OrdinalIgnoreCase) ||
+                        file.Name.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)|| file.Name.EndsWith(".tiff", StringComparison.OrdinalIgnoreCase) || 
+                        file.Name.EndsWith(".tif", StringComparison.OrdinalIgnoreCase)) 
+                    
                     {
-                        newDirName = string.Format("{3}{0}-{1}-{2}", arr[0], padDateInt(Int32.Parse(arr[1])), padDateInt(Int32.Parse(arr[2])), path);
-                        if (!dirs[i].FullName.Equals(newDirName))
+                        string name = string.Empty;
+                        
+                        using (SHA1CryptoServiceProvider sha1 = new SHA1CryptoServiceProvider())
                         {
-                            dirs[i].MoveTo(newDirName); 
-                        }       
+                            var fn = file.DirectoryName + "\\" + file.Name;
+                            var bytes = File.ReadAllBytes(fn);
+                            var hash = Convert.ToBase64String(sha1.ComputeHash(bytes));
+                            var exp = new Regex("[/]");
+                            name = exp.Replace(hash, "_") + extension;
+                        }
+                        var tmpName = temp.FullName + "\\" + name;
+                        var check = new FileInfo(tmpName);
+                        if (!check.Exists)
+                        {
+                            file.MoveTo(temp.FullName + "\\" + name);
+
+                        }
+                        else
+                        {
+                            var dupeName = dupes.FullName + "\\" + name;
+                            check = new FileInfo(dupeName);
+                            if (!check.Exists)
+                            {
+                                PrintF(string.Format("Duping {0}", file.Name), true);
+                                file.MoveTo(dupeName);
+                            }
+                            else
+                            {
+                                PrintF(string.Format("Skipping {0}", file.Name), true);
+                            }
+                        }
                     }
+                    else if (file.Name.EndsWith(".mov", StringComparison.OrdinalIgnoreCase))
+                    {
+                        file.MoveTo(video.FullName + file.Name);
+                    }
+                    Application.DoEvents();
                 }
+
             }
+            PrintF(string.Format("Complete."), true);
         }
     }
 }

@@ -29,10 +29,9 @@ namespace ObjectModel
       using (StreamWriter sw = new StreamWriter(__errorLogPath, true))
       {
         sw.WriteLine(DateTime.Now.ToString());
-        sw.WriteLine("-------------------------------------------------------");
         sw.WriteLine(msg);
-        sw.WriteLine("");
-        sw.WriteLine("");
+        sw.WriteLine();
+        sw.WriteLine();
       }
     }
   }
