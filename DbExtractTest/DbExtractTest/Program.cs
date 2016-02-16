@@ -1,85 +1,271 @@
 ﻿using System;
 using System.CodeDom;
 using System.Collections.Generic;
+using System.Data.Entity.Core.Objects.DataClasses;
 using System.Data.Entity.Migrations;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace DbExtractTest
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static int _counter = 0;
+
+        private static void Main(string[] args)
         {
-            const int LINES_AFTER_FLAG = 3;
-            var series = new Dictionary<string, Indexable>();
+            //ProcessFiles();
+            //InspectFile("actors.list.gz");
+            //InspectFile("actresses.list.gz");
+            //InspectFile("directors.list.gz");
+            //InspectFile("writers.list.gz");
+            //InspectFile("ratings.list.gz");
+            InspectFile("plot.list.gz");
+        }
 
-            using (var context = new MdbContext())
+        private static void ProcessFiles()
+        {
+            DateTime runtTime = DateTime.Now;
+            using (var db = new MdbContext())
             {
-
-            }
-
-            using (var sr = new StreamReader("movies.list.gz"))
-            using (var sw = new StreamWriter("movies.dat"))
-            {
-                var str = string.Empty;
-                var skipLines = long.MaxValue;
-                while (skipLines > 0)
+                foreach (var fileDetail in db.FileDataDetails.Where(f => f.Active))
                 {
-                    str = sr.ReadLine();
-                    if (str == null)
+                    int errorCount = 0;
+                    using (var sr = new StreamReader(fileDetail.FileName))
                     {
-                        throw new ArgumentException("Invalid file structure:  EOF reached before begin flag.");
-                    }
-                    else
-                    {
-                        if (str.StartsWith("MOVIES LIST"))
+                        var str = string.Empty;
+                        var skipLines = long.MaxValue;
+                        while (skipLines > 0)
                         {
-                            skipLines = LINES_AFTER_FLAG;
-                        }
-                    }
-                    --skipLines;
-                }
-
-                var i = 0;
-                while ((str = sr.ReadLine()) != null)
-                {
-                    if (i % 1000 == 0 || i < 100)
-                    {
-                        var indexable = Indexable.Parse(str);
-                        if (indexable.IndexableType.Code.Equals("(SERIES)"))
-                        {
-                            if (!series.ContainsKey(indexable.Title))
+                            str = sr.ReadLine();
+                            if (str == null)
                             {
-                                series.Add(indexable.Title, indexable);
+                                throw new ArgumentException("Invalid file structure:  EOF reached before begin flag.");
                             }
                             else
                             {
-                                if (series[indexable.Title].Episodes == null) series[indexable.Title].Episodes = new List<IndexLeaf>();
-                                series[indexable.Title].Episodes.Add(indexable.Episodes[0]);
+                                if (str.StartsWith(fileDetail.OpenFlag))
+                                {
+                                    skipLines = fileDetail.LinesAfterFlag;
+                                }
                             }
-
+                            --skipLines;
                         }
-                        //sw.WriteLine(string.Format("{0} source => {1}", indexable.Title, str));
+                        var i = 0;
 
+                        while ((str = sr.ReadLine()) != null)
+                        {
+                            try
+                            {
+                                using (var repo = FileItemRepositoryFactory.GetInstance(fileDetail.ItemClassName))
+                                {
+                                    repo.AddOrUpdate(fileDetail.Id, str);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                errorCount++;
+                                using (
+                                    var ew = new StreamWriter(string.Format("errorLog.{0}.txt", runtTime.Ticks),
+                                        true))
+                                {
+                                    ew.WriteLine(
+                                        string.Format("ERROR - [{6}] File: {0} Source: {1}{2}{3}{4}{5}{7}{8}",
+                                            fileDetail.FileName, str,
+                                            Environment.NewLine, ex.Message,
+                                            Environment.NewLine, ex.StackTrace,
+                                            DateTime.Now.ToLongTimeString(),
+                                            Environment.NewLine,
+                                            ex.InnerException == null
+                                                ? "No Inner Exception"
+                                                : ex.InnerException.Message));
+                                }
+
+                                if (errorCount >= 10)
+                                {
+                                    Console.WriteLine();
+                                    Console.WriteLine("Exiting due to error count.");
+                                    Console.Read();
+                                    return;
+                                }
+                            }
+                            if (i%10 == 0)
+                            {
+                                Console.Write(Spin(i));
+                            }
+                            if (++i > 10000) break;
+                        }
                     }
-                    ++i;
                 }
-                if (series != null && series.Count > 0)
-                {
-                    foreach (var val in series.Values)
-                    {
-                        sw.WriteLine(val.ToString());
-                    }
-                }
-                
             }
-
-
+            Console.WriteLine();
             Console.WriteLine("Done.");
             Console.Read();
+
+        }
+
+        private static void InspectFile(string fileName)
+        {
+            DateTime runtTime = DateTime.Now;
+            var i = 0;
+            using (var db = new MdbContext())
+            {
+                var fileDetail = db.FileDataDetails.SingleOrDefault(f => f.FileName == fileName);
+                if (fileDetail != null)
+                {
+                    using (var sr = new StreamReader(fileDetail.FileName))
+                    {
+                        var source = string.Empty;
+                        var skipLines = long.MaxValue;
+                        while (skipLines > 0)
+                        {
+                            source = sr.ReadLine();
+                            if (source == null)
+                            {
+                                throw new ArgumentException("Invalid file structure:  EOF reached before begin flag.");
+                            }
+                            else
+                            {
+                                if (source.StartsWith(fileDetail.OpenFlag))
+                                {
+                                    skipLines = fileDetail.LinesAfterFlag;
+                                }
+                            }
+                            --skipLines;
+                        }
+
+                        using (var sw = new StreamWriter(fileDetail.FileName + "_inspect.dat"))
+                        using (var sl = new StreamWriter("inspect.dat"))
+                        {
+                            using (var repo = FileItemRepositoryFactory.GetInstance(fileDetail.ItemClassName))
+                            {
+                                var tokens = new List<string>();
+                                var peek = string.Empty;
+                                try
+                                {
+                                    while ((peek = sr.ReadLine()) != null)
+                                    {
+                                        var sb = new StringBuilder();
+                                        sb.AppendLine(peek);
+
+                                        if (fileDetail.ReadAheadFor != null)
+                                        {
+                                            while ((source = sr.ReadLine()) != null &&
+                                                   !source.StartsWith(fileDetail.ReadAheadFor))
+                                            {
+                                                sb.AppendLine(source);
+                                            }
+                                        }
+
+                                        tokens = repo.ParseToTokens(sb.ToString());
+                                        sw.WriteLine(TokensToString(tokens));
+                                        sl.WriteLine(sb.ToString());
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    using (
+                                        var ew = new StreamWriter(
+                                            string.Format("errorLog.{0}.log", runtTime.Ticks), true))
+                                    {
+                                        ew.WriteLine(
+                                            string.Format("ERROR - [{6}] File: {0} Source: {1}{2}{3}{4}{5}{7}{8}",
+                                                fileDetail.FileName, source,
+                                                Environment.NewLine, ex.Message,
+                                                Environment.NewLine, ex.StackTrace,
+                                                DateTime.Now.ToLongTimeString(),
+                                                Environment.NewLine,
+                                                ex.InnerException == null
+                                                    ? "No Inner Exception"
+                                                    : ex.InnerException.Message));
+                                    }
+                                }
+                                if (i%10 == 0)
+                                {
+                                    Console.Write(Spin(i));
+                                }
+                                if (++i > 10000) break;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    using (var sr = new StreamReader(fileName))
+                    {
+                        using (var sw = new StreamWriter("inspect.dat"))
+                        {
+                            var source = string.Empty;
+                            while ((source = sr.ReadLine()) != null)
+                            {
+                                try
+                                {
+                                    sw.WriteLine(source);
+                                }
+                                catch (Exception ex)
+                                {
+                                    using (
+                                        var ew = new StreamWriter(string.Format("errorLog.{0}.log", runtTime.Ticks),
+                                            true))
+                                    {
+                                        ew.WriteLine(ex.Message);
+                                    }
+                                }
+                                if (i%10 == 0)
+                                {
+                                    Console.Write(Spin(i));
+                                }
+                                if (++i > 10000) break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            Console.WriteLine();
+            Console.WriteLine("Done.");
+            Console.Read();
+        }
+
+        public static string TokensToString(List<string> t)
+        {
+            var sb = new StringBuilder();
+            foreach (var s in t)
+            {
+                sb.Append(s).Append("|");
+            }
+            sb.AppendLine();
+            return sb.ToString();
+        }
+
+        public static string Spin(long id)
+        {
+            _counter++;
+            string fan = string.Empty;
+            switch (_counter%4)
+            {
+                case 0:
+                    fan = "/";
+                    _counter = 0;
+                    break;
+                case 1:
+                    fan = "-";
+                    break;
+                case 2:
+                    fan = "\\";
+                    break;
+                case 3:
+                    fan = "|";
+                    break;
+            }
+
+            var pad = (int) (id%10);
+
+            return string.Format("\r{0} Record: {1}{2}", fan, id, "".PadRight(pad, ' '));
         }
     }
 }

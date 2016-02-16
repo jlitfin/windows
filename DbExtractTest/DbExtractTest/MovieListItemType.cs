@@ -1,7 +1,7 @@
 ﻿
 namespace DbExtractTest
 {
-    public class IndexableType
+    public class MovieListItemType
     {
         public int Id { get; set; }
         public string DisplayName { get; set; }

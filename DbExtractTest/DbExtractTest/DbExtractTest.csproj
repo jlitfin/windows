@@ -50,12 +50,27 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Indexable.cs" />
-    <Compile Include="IndexableType.cs" />
-    <Compile Include="IndexLeaf.cs" />
+    <Compile Include="ActorAppearance.cs" />
+    <Compile Include="ActorListItem.cs" />
+    <Compile Include="ActorListItemRepository.cs" />
+    <Compile Include="Constants.cs" />
+    <Compile Include="FileDataDetail.cs" />
+    <Compile Include="FileItemRepositoryFactory.cs" />
+    <Compile Include="IFileItem.cs" />
+    <Compile Include="IFileItemRepository.cs" />
+    <Compile Include="FileItemRepository.cs" />
+    <Compile Include="MovieListItem.cs" />
+    <Compile Include="ActorListItemFieldIndex.cs" />
+    <Compile Include="MovieListItemRepository.cs" />
+    <Compile Include="MovieListItemType.cs" />
+    <Compile Include="MovieListItemEpisode.cs" />
     <Compile Include="MdbConfiguration.cs" />
     <Compile Include="MdbContext.cs" />
     <Compile Include="MdbInitializer.cs" />
+    <Compile Include="MovieListItemEpisodeFieldIndex.cs" />
+    <Compile Include="MovieListItemFieldIndex.cs" />
+    <Compile Include="PlotListItem.cs" />
+    <Compile Include="PlotListItemRepository.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TextFileEncodingDetector.cs" />
