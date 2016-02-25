@@ -32,9 +32,12 @@ namespace DbExtractTest
             while (startIndex < source.Length)
             {
                 var ndx = source.IndexOf("(", startIndex);
-                var odx = source.IndexOf(")", ndx > 0 ? ndx : source.Length);
+                var odx = source.IndexOf(")", ndx >= 0 ? ndx : source.Length);
                 var pdx = source.IndexOf("/", ndx);
-                if (ndx < 0 || odx < 0) throw new Exception(string.Format("Improperly formatted data: {0}", source));
+                if (ndx < 0 || odx < 0)
+                {
+                    throw new Exception(string.Format("Improperly formatted data: {0}", source));
+                }
                 //
                 // all keys have a date in this file, but may have other parens so, validate it is a date
                 //

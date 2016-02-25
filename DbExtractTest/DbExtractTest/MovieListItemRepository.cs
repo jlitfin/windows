@@ -12,7 +12,7 @@ namespace DbExtractTest
         public override IFileItem AddOrUpdate(int fileId, string source)
         {
             MovieListItem item = null;
-            if (string.IsNullOrEmpty(source)) return null;
+            if (string.IsNullOrWhiteSpace(source)) return null;
             var tokens = ParseToTokens(source);
             using (var db = new MdbContext())
             {

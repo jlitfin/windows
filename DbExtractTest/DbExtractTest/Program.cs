@@ -1,13 +1,16 @@
 ﻿using System;
 using System.CodeDom;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Data.Entity.Core.Objects.DataClasses;
 using System.Data.Entity.Migrations;
+using System.Data.Sql;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace DbExtractTest
@@ -15,16 +18,17 @@ namespace DbExtractTest
     internal class Program
     {
         private static int _counter = 0;
+        private const int _linesToProcess = 2000;
 
         private static void Main(string[] args)
         {
-            //ProcessFiles();
+            ProcessFiles();
             //InspectFile("actors.list.gz");
             //InspectFile("actresses.list.gz");
             //InspectFile("directors.list.gz");
             //InspectFile("writers.list.gz");
             //InspectFile("ratings.list.gz");
-            InspectFile("plot.list.gz");
+            //InspectFile("plot.list.gz");
         }
 
         private static void ProcessFiles()
@@ -34,21 +38,22 @@ namespace DbExtractTest
             {
                 foreach (var fileDetail in db.FileDataDetails.Where(f => f.Active))
                 {
+                    Console.WriteLine("Processing: {0}", fileDetail.FileName);
                     int errorCount = 0;
                     using (var sr = new StreamReader(fileDetail.FileName))
                     {
-                        var str = string.Empty;
+                        var source = string.Empty;
                         var skipLines = long.MaxValue;
                         while (skipLines > 0)
                         {
-                            str = sr.ReadLine();
-                            if (str == null)
+                            source = sr.ReadLine();
+                            if (source == null)
                             {
                                 throw new ArgumentException("Invalid file structure:  EOF reached before begin flag.");
                             }
                             else
                             {
-                                if (str.StartsWith(fileDetail.OpenFlag))
+                                if (source.StartsWith(fileDetail.OpenFlag))
                                 {
                                     skipLines = fileDetail.LinesAfterFlag;
                                 }
@@ -57,47 +62,95 @@ namespace DbExtractTest
                         }
                         var i = 0;
 
-                        while ((str = sr.ReadLine()) != null)
+                        using (var repo = FileItemRepositoryFactory.GetInstance(fileDetail.ItemClassName))
                         {
-                            try
+                            var peek = string.Empty;
+                            source = null;
+
+                            var sb = new StringBuilder();
+                            while (true)
                             {
-                                using (var repo = FileItemRepositoryFactory.GetInstance(fileDetail.ItemClassName))
+                                try
                                 {
-                                    repo.AddOrUpdate(fileDetail.Id, str);
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                errorCount++;
-                                using (
-                                    var ew = new StreamWriter(string.Format("errorLog.{0}.txt", runtTime.Ticks),
-                                        true))
-                                {
-                                    ew.WriteLine(
-                                        string.Format("ERROR - [{6}] File: {0} Source: {1}{2}{3}{4}{5}{7}{8}",
-                                            fileDetail.FileName, str,
-                                            Environment.NewLine, ex.Message,
-                                            Environment.NewLine, ex.StackTrace,
-                                            DateTime.Now.ToLongTimeString(),
-                                            Environment.NewLine,
-                                            ex.InnerException == null
-                                                ? "No Inner Exception"
-                                                : ex.InnerException.Message));
+                                    //
+                                    // capture read of new record open encountered below
+                                    //
+                                    sb = new StringBuilder();
+                                    if (source != null)
+                                    {
+                                        sb = new StringBuilder();
+                                        sb.AppendLine(source);
+                                        source = null;
+                                    }
+
+                                    peek = sr.ReadLine();
+                                    if (peek == null)
+                                    {
+                                        break;
+                                    }
+                                    sb.AppendLine(peek);
+
+                                    if (fileDetail.ReadAheadFor != null)
+                                    {
+                                        while ((peek = sr.ReadLine()) != null)
+                                        {
+                                            if (Regex.IsMatch(peek, fileDetail.ReadAheadFor))
+                                            {
+                                                source = peek;
+                                                break;
+                                            }
+
+                                            if (!string.IsNullOrEmpty(peek))
+                                            {
+                                                sb.AppendLine(peek);
+                                            }
+
+                                        }
+                                    }
+                                    repo.AddOrUpdate(fileDetail.Id, sb.ToString());
+
+                                    if (i%10 == 0)
+                                    {
+                                        Console.Write(Spin(i));
+                                    }
+                                    if (++i > _linesToProcess)
+                                    {
+                                        Console.Write("\r{0} records processed.".PadRight(80, ' '), --i);
+                                        Console.WriteLine();
+
+                                        break;
+                                    }
                                 }
 
-                                if (errorCount >= 10)
+                                catch (Exception ex)
                                 {
-                                    Console.WriteLine();
-                                    Console.WriteLine("Exiting due to error count.");
-                                    Console.Read();
-                                    return;
+                                    errorCount++;
+                                    using (
+                                        var ew = new StreamWriter(string.Format("errorLog.{0}.txt", runtTime.Ticks),
+                                            true))
+                                    {
+                                        ew.WriteLine(
+                                            string.Format(
+                                                "ERROR - [{6}] File [{9}]: {0} Source: {1}{2}{3}{4}{5}{7}{8}",
+                                                fileDetail.FileName, source,
+                                                Environment.NewLine, ex.Message,
+                                                Environment.NewLine, ex.StackTrace,
+                                                DateTime.Now.ToLongTimeString(),
+                                                Environment.NewLine,
+                                                ex.InnerException == null
+                                                    ? "No Inner Exception"
+                                                    : ex.InnerException.Message, i));
+                                    }
+
+                                    if (errorCount >= 10)
+                                    {
+                                        Console.WriteLine();
+                                        Console.WriteLine("Exiting due to error count.");
+                                        Console.Read();
+                                        return;
+                                    }
                                 }
                             }
-                            if (i%10 == 0)
-                            {
-                                Console.Write(Spin(i));
-                            }
-                            if (++i > 10000) break;
                         }
                     }
                 }
@@ -128,13 +181,12 @@ namespace DbExtractTest
                             {
                                 throw new ArgumentException("Invalid file structure:  EOF reached before begin flag.");
                             }
-                            else
+
+                            if (source.StartsWith(fileDetail.OpenFlag))
                             {
-                                if (source.StartsWith(fileDetail.OpenFlag))
-                                {
-                                    skipLines = fileDetail.LinesAfterFlag;
-                                }
+                                skipLines = fileDetail.LinesAfterFlag;
                             }
+
                             --skipLines;
                         }
 
@@ -145,50 +197,85 @@ namespace DbExtractTest
                             {
                                 var tokens = new List<string>();
                                 var peek = string.Empty;
-                                try
+                                source = null;
+
+                                var sb = new StringBuilder();
+                                while (true)
                                 {
-                                    while ((peek = sr.ReadLine()) != null)
+                                    try
                                     {
-                                        var sb = new StringBuilder();
+                                        //
+                                        // capture read of new record open encountered below
+                                        //
+                                        sb = new StringBuilder();
+                                        if (source != null)
+                                        {
+                                            sb.AppendLine(source);
+                                            source = null;
+                                        }
+
+                                        peek = sr.ReadLine();
+                                        if (peek == null)
+                                        {
+                                            break;
+                                        }
                                         sb.AppendLine(peek);
 
                                         if (fileDetail.ReadAheadFor != null)
                                         {
-                                            while ((source = sr.ReadLine()) != null &&
-                                                   !source.StartsWith(fileDetail.ReadAheadFor))
+                                            while ((peek = sr.ReadLine()) != null)
                                             {
-                                                sb.AppendLine(source);
+                                                ++i;
+                                                if (Regex.IsMatch(peek, fileDetail.ReadAheadFor))
+                                                {
+                                                    source = peek;
+                                                    break;
+                                                }
+                                                else
+                                                {
+                                                    if (!string.IsNullOrEmpty(peek))
+                                                    {
+                                                        sb.AppendLine(peek);
+                                                    }
+                                                }
                                             }
                                         }
-
                                         tokens = repo.ParseToTokens(sb.ToString());
                                         sw.WriteLine(TokensToString(tokens));
                                         sl.WriteLine(sb.ToString());
+
+                                        if (i%10 == 0)
+                                        {
+                                            Console.Write(Spin(i));
+                                        }
+                                        if (++i > _linesToProcess)
+                                        {
+                                            Console.Write("\r{0}", " ".PadRight(80, ' '));
+                                            Console.Write("{0} lines processed.", i);
+                                            break;
+                                        }
                                     }
-                                }
-                                catch (Exception ex)
-                                {
-                                    using (
-                                        var ew = new StreamWriter(
-                                            string.Format("errorLog.{0}.log", runtTime.Ticks), true))
+
+                                    catch (Exception ex)
                                     {
-                                        ew.WriteLine(
-                                            string.Format("ERROR - [{6}] File: {0} Source: {1}{2}{3}{4}{5}{7}{8}",
-                                                fileDetail.FileName, source,
-                                                Environment.NewLine, ex.Message,
-                                                Environment.NewLine, ex.StackTrace,
-                                                DateTime.Now.ToLongTimeString(),
-                                                Environment.NewLine,
-                                                ex.InnerException == null
-                                                    ? "No Inner Exception"
-                                                    : ex.InnerException.Message));
+                                        using (
+                                            var ew = new StreamWriter(
+                                                string.Format("errorLog.{0}.log", runtTime.Ticks), true))
+                                        {
+                                            ew.WriteLine(
+                                                string.Format(
+                                                    "ERROR - [{6}] File [{9}]: {0} Source: {1}{2}{3}{4}{5}{7}{8}",
+                                                    fileDetail.FileName, source,
+                                                    Environment.NewLine, ex.Message,
+                                                    Environment.NewLine, ex.StackTrace,
+                                                    DateTime.Now.ToLongTimeString(),
+                                                    Environment.NewLine,
+                                                    ex.InnerException == null
+                                                        ? "No Inner Exception"
+                                                        : ex.InnerException.Message, i));
+                                        }
                                     }
                                 }
-                                if (i%10 == 0)
-                                {
-                                    Console.Write(Spin(i));
-                                }
-                                if (++i > 10000) break;
                             }
                         }
                     }
@@ -219,7 +306,7 @@ namespace DbExtractTest
                                 {
                                     Console.Write(Spin(i));
                                 }
-                                if (++i > 10000) break;
+                                if (++i > _linesToProcess) break;
                             }
                         }
                     }
@@ -236,7 +323,7 @@ namespace DbExtractTest
             var sb = new StringBuilder();
             foreach (var s in t)
             {
-                sb.Append(s).Append("|");
+                sb.AppendLine(s);
             }
             sb.AppendLine();
             return sb.ToString();

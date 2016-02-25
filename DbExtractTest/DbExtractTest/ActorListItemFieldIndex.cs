@@ -11,9 +11,6 @@ namespace DbExtractTest
         ActorListItemId = 0,
         FirstName = 1,
         LastName = 2,
-        MovieListItemId = 3,
-        Title = 4,
-        Season = 5,
-        Episode = 6
+        Appearances = 3
     }
 }

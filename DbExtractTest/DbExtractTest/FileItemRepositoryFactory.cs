@@ -14,21 +14,15 @@ namespace DbExtractTest
             {
                 case Constants.ImportableTypes.MovieListItem:
                     return new MovieListItemRepository();
-                    break;
 
                 case Constants.ImportableTypes.ActorListItem:
                     return new ActorListItemRepository();
-                    break;
 
                 case Constants.ImportableTypes.PlotListItem:
                     return new PlotListItemRepository();
-                    break;
             }
 
             return null;
         }
-
-
-
     }
 }

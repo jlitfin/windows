@@ -10,7 +10,8 @@ namespace DbExtractTest
     {
         public int Id { get; set; }
         public string MovieListItemId { get; set; }
-        public int MovieListItemEpisodeId { get; set; }
+        public string Season { get; set; }
+        public string Episode { get; set; }
         public string Plot { get; set; }
 
 

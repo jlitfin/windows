@@ -51,9 +51,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActorAppearance.cs" />
+    <Compile Include="ActorAppearanceFieldIndex.cs" />
+    <Compile Include="ActorAppearanceRepository.cs" />
     <Compile Include="ActorListItem.cs" />
     <Compile Include="ActorListItemRepository.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="DirectorCredit.cs" />
+    <Compile Include="DirectorListItem.cs" />
+    <Compile Include="DirectorListItemRepository.cs" />
     <Compile Include="FileDataDetail.cs" />
     <Compile Include="FileItemRepositoryFactory.cs" />
     <Compile Include="IFileItem.cs" />
@@ -70,6 +75,7 @@
     <Compile Include="MovieListItemEpisodeFieldIndex.cs" />
     <Compile Include="MovieListItemFieldIndex.cs" />
     <Compile Include="PlotListItem.cs" />
+    <Compile Include="PlotListItemFieldIndex.cs" />
     <Compile Include="PlotListItemRepository.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

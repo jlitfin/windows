@@ -16,5 +16,6 @@ namespace DbExtractTest
         public DbSet<MovieListItem> MovieListItems { get; set; }
         public DbSet<MovieListItemEpisode> MovieListItemEpisodes { get; set; }
         public DbSet<MovieListItemType> MovieListItemTypes { get; set; }
+        public DbSet<PlotListItem> PlotListItems { get; set; }
     }
 }
