@@ -20,6 +20,12 @@ namespace DbExtractTest
 
                 case Constants.ImportableTypes.PlotListItem:
                     return new PlotListItemRepository();
+
+                case Constants.ImportableTypes.DirectorListItem:
+                    return new DirectorListItemRepository();
+
+                case Constants.ImportableTypes.RatingListItem:
+                    return new RatingListItemRepository();
             }
 
             return null;

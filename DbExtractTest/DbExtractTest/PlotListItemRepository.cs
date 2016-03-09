@@ -23,26 +23,20 @@ namespace DbExtractTest
                 var target = db.MovieListItems.SingleOrDefault(m => m.Id == id);
                 var season = tokens[(int)PlotListItemFieldIndex.Season];
                 var episode = tokens[(int)PlotListItemFieldIndex.Episode];
-                if (target != null)
-                {
-                    item =
-                        db.PlotListItems.SingleOrDefault(
-                            p => p.MovieListItemId == target.Id && p.Season == season && p.Episode == episode) ??
-                        new PlotListItem
-                            {
-                                MovieListItemId = target.Id,
-                                Season = season,
-                                Episode = episode
-                            };
+                if (target == null) return item;
+                item =
+                    db.PlotListItems.SingleOrDefault(
+                        p => p.MovieListItemId == target.Id && p.Season == season && p.Episode == episode) ??
+                    new PlotListItem
+                    {
+                        MovieListItemId = target.Id,
+                        Season = season,
+                        Episode = episode
+                    };
 
-                    item.Plot = tokens[(int) PlotListItemFieldIndex.Plot];
-                    db.PlotListItems.AddOrUpdate(item);
-                    db.SaveChanges();
-                }
-                //else
-                //{
-                //    throw new ArgumentException("No record of this plot target.");
-                //}
+                item.Plot = tokens[(int) PlotListItemFieldIndex.Plot];
+                db.PlotListItems.AddOrUpdate(item);
+                db.SaveChanges();
             }
             return item;
         }

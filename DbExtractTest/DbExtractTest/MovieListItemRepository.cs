@@ -39,7 +39,6 @@ namespace DbExtractTest
                 else
                 {
                     item = new MovieListItem();
-                    item.FileDataDetailId = fileId;
                     item.Source = source;
                     item.Id = tokens[(int)MovieListItemFieldIndex.Id];
                     item.Title = tokens[(int)MovieListItemFieldIndex.Title];

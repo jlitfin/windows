@@ -18,14 +18,14 @@ namespace DbExtractTest
     internal class Program
     {
         private static int _counter = 0;
-        private const int _linesToProcess = 2000;
+        private const int _linesToProcess = 1000;
 
         private static void Main(string[] args)
         {
             ProcessFiles();
             //InspectFile("actors.list.gz");
             //InspectFile("actresses.list.gz");
-            //InspectFile("directors.list.gz");
+            //spectFile("directors.list.gz");
             //InspectFile("writers.list.gz");
             //InspectFile("ratings.list.gz");
             //InspectFile("plot.list.gz");

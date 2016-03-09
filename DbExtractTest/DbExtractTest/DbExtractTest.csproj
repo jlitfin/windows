@@ -57,13 +57,16 @@
     <Compile Include="ActorListItemRepository.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="DirectorCredit.cs" />
+    <Compile Include="DirectorCreditRepository.cs" />
     <Compile Include="DirectorListItem.cs" />
+    <Compile Include="DirectorListItemFieldIndex.cs" />
     <Compile Include="DirectorListItemRepository.cs" />
     <Compile Include="FileDataDetail.cs" />
     <Compile Include="FileItemRepositoryFactory.cs" />
     <Compile Include="IFileItem.cs" />
     <Compile Include="IFileItemRepository.cs" />
     <Compile Include="FileItemRepository.cs" />
+    <Compile Include="MovieKeyFieldIndex.cs" />
     <Compile Include="MovieListItem.cs" />
     <Compile Include="ActorListItemFieldIndex.cs" />
     <Compile Include="MovieListItemRepository.cs" />
@@ -79,6 +82,9 @@
     <Compile Include="PlotListItemRepository.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RatingListItem.cs" />
+    <Compile Include="RatingListItemFieldIndex.cs" />
+    <Compile Include="RatingListItemRepository.cs" />
     <Compile Include="TextFileEncodingDetector.cs" />
   </ItemGroup>
   <ItemGroup>

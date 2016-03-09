@@ -15,7 +15,6 @@ namespace DbExtractTest
     public class MovieListItem : IFileItem
     {
         public string Id { get; set; }
-        public int FileDataDetailId { get; set; }
         public string Title { get; set; }
         public string Year { get; set; }
         public string Source { get; set; }
@@ -24,8 +23,6 @@ namespace DbExtractTest
         [ForeignKey("MovieListItemTypeId")]
         public MovieListItemType MovieListItemType { get; set; }
         public virtual ICollection<MovieListItemEpisode> Episodes { get; set; }
-        [ForeignKey("FileDataDetailId")]
-        public virtual FileDataDetail FileDataDetail { get; set; }
 
         public MovieListItem()
         {
@@ -37,7 +34,6 @@ namespace DbExtractTest
             sb.AppendLine("{")
                 .AppendLine(string.Format("{0}\"Id\": \"{1}\",", "\t", Id))
                 .AppendLine(string.Format("{0}\"Key\": \"{1}\",", "\t", Id))
-                .AppendLine(string.Format("{0}\"FileDataDetailId\": \"{1}\",", "\t", FileDataDetailId))
                 .AppendLine(string.Format("{0}\"Title\": \"{1}\",", "\t", Title))
                 .AppendLine(string.Format("{0}\"Year\": \"{1}\",", "\t", Year))
                 .AppendLine(string.Format("{0}\"Episodes\": ", "\t"));
