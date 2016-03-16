@@ -8,21 +8,21 @@ using System.Threading.Tasks;
 
 namespace DbExtractTest
 {
-    public class MdbInitializer : DropCreateDatabaseAlways<MdbContext> // DropCreateDatabaseIfModelChanges<MdbContext> // DropCreateDatabaseAlways<MdbContext>
+    public class MdbInitializer : DropCreateDatabaseIfModelChanges<MdbContext> // DropCreateDatabaseIfModelChanges<MdbContext> // DropCreateDatabaseAlways<MdbContext>
     {
         protected override void Seed(MdbContext context)
         {
-            if (!context.MovieListItemTypes.Any())
-            {
-                context.MovieListItemTypes.AddOrUpdate(c => c.Id,
-                    new MovieListItemType { Code = Constants.NullFieldValue, DisplayName = "", Id = 1 },
-                    new MovieListItemType { Code = "(TV)", DisplayName = "TV Movie / Special", Id = 2},
-                    new MovieListItemType { Code = "(V)", DisplayName = "Direct To Video", Id = 3 },
-                    new MovieListItemType { Code = "(VG)", DisplayName = "Video Game", Id = 4 },
-                    new MovieListItemType { Code = "(SERIES)", DisplayName = "TV Series", Id = 5 },
-                    new MovieListItemType { Code = "(FILM)", DisplayName = "Theatrical Release", Id =6 }                
-                    );
-            }
+            //if (!context.MovieListItemTypes.Any())
+            //{
+            //    context.MovieListItemTypes.AddOrUpdate(c => c.Id,
+            //        new MovieListItemType { Code = Constants.NullFieldValue, DisplayName = "", Id = 1 },
+            //        new MovieListItemType { Code = "(TV)", DisplayName = "TV Movie / Special", Id = 2},
+            //        new MovieListItemType { Code = "(V)", DisplayName = "Direct To Video", Id = 3 },
+            //        new MovieListItemType { Code = "(VG)", DisplayName = "Video Game", Id = 4 },
+            //        new MovieListItemType { Code = "(SERIES)", DisplayName = "TV Series", Id = 5 },
+            //        new MovieListItemType { Code = "(FILM)", DisplayName = "Theatrical Release", Id =6 }                
+            //        );
+            //}
 
             if (!context.FileDataDetails.Any())
             {

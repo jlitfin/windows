@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity.Migrations;
-using System.Data.Sql;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace DbExtractTest
 {
@@ -21,10 +19,10 @@ namespace DbExtractTest
                     Distribution = tokens[(int) RatingListItemFieldIndex.Distribution],
                     Rank = Decimal.Parse(tokens[(int) RatingListItemFieldIndex.Rank]),
                     Votes = Int64.Parse(tokens[(int) RatingListItemFieldIndex.Votes]),
-                    MovieListItemId = keyTokens[(int) MovieKeyFieldIndex.MovieListItemId],
-                    Title = keyTokens[(int) MovieKeyFieldIndex.Title],
-                    Season = keyTokens[(int) MovieKeyFieldIndex.Season],
-                    Episode = keyTokens[(int) MovieKeyFieldIndex.Episode]
+                    //MovieListItemId = keyTokens[(int) MovieKeyFieldIndex.MovieListItemId],
+                    //Title = keyTokens[(int) MovieKeyFieldIndex.Title],
+                    //Season = keyTokens[(int) MovieKeyFieldIndex.Season],
+                    //Episode = keyTokens[(int) MovieKeyFieldIndex.Episode]
                 };
 
                 var check =

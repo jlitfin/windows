@@ -9,8 +9,6 @@ namespace DbExtractTest
     public enum PlotListItemFieldIndex
     {
         Id = 0,
-        Season = 1,
-        Episode = 2,
-        Plot = 3
+        Plot = 1
     }
 }

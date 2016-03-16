@@ -11,53 +11,17 @@ namespace DbExtractTest
     {
         public override IFileItem AddOrUpdate(int fileId, string source)
         {
-            DirectorListItem item = null;
             if (string.IsNullOrWhiteSpace(source)) return null;
             var tokens = ParseToTokens(source);
 
             using (var db = new MdbContext())
             {
-                var id = tokens[(int)DirectorListItemFieldIndex.DirectorListItemId];
-                item = db.DirectorListItems.SingleOrDefault(a => a.Id == id);
-                if (item == null)
-                {
-                    item = new DirectorListItem
-                    {
-                        Id = id,
-                        FirstName = tokens[(int)DirectorListItemFieldIndex.FirstName],
-                        LastName = tokens[(int)DirectorListItemFieldIndex.LastName]
-                    };
-                }
-                else
-                {
-                    item.FirstName = tokens[(int)DirectorListItemFieldIndex.FirstName];
-                    item.LastName = tokens[(int)DirectorListItemFieldIndex.LastName];
-                }
+                var item = new DirectorListItem(tokens);
+                var existing = db.DirectorListItems.SingleOrDefault(d => d.Id == item.Id);
 
-                for (var i = (int)DirectorListItemFieldIndex.Credits; i < tokens.Count; ++i)
-                {
-                    var credit = DirectorCreditRepository.Get(id, tokens[i]);
-                    if (credit.Id == 0)
-                    {
-                        //
-                        // add if new and not a dupe by our columns
-                        //
-                        if (item.Credits == null) item.Credits = new List<DirectorCredit>();
-                        if (!item.Credits.Any(a => a.DirectorListItemId == credit.DirectorListItemId
-                                 && a.MovieListItemId == credit.MovieListItemId
-                                 && a.Title == credit.Title
-                                 && a.Season == credit.Season
-                                 && a.Episode == credit.Episode))
-                        {
-                            item.Credits.Add(credit);
-                        }
-                    }
-                }
-
-                db.DirectorListItems.AddOrUpdate(item);
                 db.SaveChanges();
             }
-            return item;
+            return null;
         }
 
         public override List<string> ParseToTokens(string source)

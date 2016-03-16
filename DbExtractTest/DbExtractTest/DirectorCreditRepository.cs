@@ -14,10 +14,8 @@ namespace DbExtractTest
             var credit = new DirectorCredit()
             {
                 DirectorListItemId = key,
-                MovieListItemId = tokens[(int)ActorAppearanceFieldIndex.MovieListItemId],
-                Title = tokens[(int)ActorAppearanceFieldIndex.Title],
-                Season = tokens[(int)ActorAppearanceFieldIndex.Season],
-                Episode = tokens[(int)ActorAppearanceFieldIndex.Episode]
+                MovieListItemId = tokens[(int)ActorAppearanceFieldIndex.MovieListItemId]
+
             };
 
             using (var db = new MdbContext())
@@ -25,10 +23,7 @@ namespace DbExtractTest
                 var existing =
                     db.DirectorCredits.SingleOrDefault(
                         a => a.DirectorListItemId == credit.DirectorListItemId
-                            && a.MovieListItemId == credit.MovieListItemId
-                            && a.Title == credit.Title
-                            && a.Season == credit.Season
-                            && a.Episode == credit.Episode);
+                            && a.MovieListItemId == credit.MovieListItemId);
 
                 if (existing != null)
                 {
