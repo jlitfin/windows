@@ -115,7 +115,13 @@ namespace ImageManagement
                 else
                 {
                     response.SuccessFlag = false;
-                    response.Message = string.Format("Skipped {0}{1}:  File Exits", __sourcePath, oldFileName);
+                    var sb = new StringBuilder();
+                    sb.AppendLine(string.Format("Skipped {0}:  File Exits", oldFileName));
+                    sb.AppendLine(string.Format("    as: {0}", newFileName));
+                    sb.AppendLine(string.Format("  from: {0}", __sourcePath));
+                    sb.AppendLine(string.Format("    to: {0}", destDir.FullName));
+
+                    response.Message = sb.ToString();
                 }
 
             }
