@@ -8,7 +8,7 @@ namespace DbExtractTest
 {
     public enum DirectorListItemFieldIndex
     {
-        DirectorListItemId = 0,
+        Id = 0,
         FirstName = 1,
         LastName = 2,
         Credits = 3

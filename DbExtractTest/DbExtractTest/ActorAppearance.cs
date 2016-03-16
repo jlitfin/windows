@@ -1,24 +1,29 @@
-﻿using System;
+﻿
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Policy;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.SqlServer.Server;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.Entity.ModelConfiguration.Conventions;
+
 
 namespace DbExtractTest
 {
     public class ActorAppearance : IFileItem
-    {
-        
-        public int Id { get; set; }
+    {     
+        [Key, Column(Order = 0)]
         public string MovieListItemId { get; set; }
-        public string Title { get; set; }
-        public string Season { get; set; }
-        public string Episode { get; set; }
 
+        [Key, Column(Order = 1)]
         public string ActorListItemId { get; set; }
 
+        public ActorAppearance()
+        {
+        }
+
+        public ActorAppearance(List<string> tokens)
+        {
+            
+        }
 
     }
 }

@@ -27,9 +27,9 @@ namespace DbExtractTest
             return startIndex;
         }
 
-        public static int NextDelimiter(int startIndex, string source, int afterAtLeastCount, bool reverseOrder = false)
+        public static int NextDelimiter(int startIndex, string source, char delimiter, int afterAtLeastCount, bool reverseOrder = false)
         {
-            var spacer = "".PadRight(afterAtLeastCount, ' ');
+            var spacer = "".PadRight(afterAtLeastCount, delimiter);
             int index = -1;
             if (reverseOrder)
             {
@@ -96,11 +96,12 @@ namespace DbExtractTest
             // movie item key
             var ndx = 0;
             var str = source.Trim();
-            var odx = FileItemRepository.FindKeyDate(0, str);
-            tokens.Add(str.Substring(ndx, odx - ndx + 1).Trim());
+            var odx = FindKeyDate(0, str);
+            var key = str.Substring(ndx, odx - ndx + 1).Trim();
+            tokens.Add(key);
 
             // check for episode
-            ndx = FileItemRepository.NextCharacter(odx + 1, str);
+            ndx = NextCharacter(odx + 1, str);
             if (ndx < str.Length && str[ndx].Equals('{'))
             {
                 // series segment

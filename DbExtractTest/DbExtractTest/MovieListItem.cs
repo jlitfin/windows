@@ -1,64 +1,50 @@
 ﻿
+
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Data.Common;
-using System.Data.Entity.Migrations.History;
-using System.IO;
-using System.Linq;
-using System.Security.Policy;
-using System.Text;
-using System.Xml.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace DbExtractTest
 {
     public class MovieListItem : IFileItem
     {
-        public string Id { get; set; }
-        public string Title { get; set; }
-        public string Year { get; set; }
-        public string Source { get; set; }
-        public int? MovieListItemTypeId { get; set; }
+        private string _uniqueKey;
 
-        [ForeignKey("MovieListItemTypeId")]
-        public MovieListItemType MovieListItemType { get; set; }
-        public virtual ICollection<MovieListItemEpisode> Episodes { get; set; }
+        public string Id
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_uniqueKey))
+                {
+                    _uniqueKey = string.Format("{0}|{1}|{2}|{3}", Title, EpisodeTitle, Season, Episode);
+                }
+                return _uniqueKey;
+            }
+            set { _uniqueKey = value; }
+        }
+
+        public string Title { get; set; }
+        public string EpisodeTitle { get; set; }
+        public string Season { get; set; }
+        public string Episode { get; set; }
+        public string Year { get; set; }
 
         public MovieListItem()
         {
         }
 
-        public override string ToString()
+        public MovieListItem(List<string> tokens)
         {
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine("{")
-                .AppendLine(string.Format("{0}\"Id\": \"{1}\",", "\t", Id))
-                .AppendLine(string.Format("{0}\"Key\": \"{1}\",", "\t", Id))
-                .AppendLine(string.Format("{0}\"Title\": \"{1}\",", "\t", Title))
-                .AppendLine(string.Format("{0}\"Year\": \"{1}\",", "\t", Year))
-                .AppendLine(string.Format("{0}\"Episodes\": ", "\t"));
+            var count = Enum.GetNames(typeof (MovieListItemFieldIndex)).Length;
+            if (tokens.Count != count)
+                throw new ArgumentOutOfRangeException(
+                    "Attempt made to build MovieListItem with incorrect number of tokens.");
 
-            sb.AppendLine("\t{");
-            if (this.Episodes != null && this.Episodes.Count > 0)
-            {
-                foreach (var leaf in Episodes.OrderBy(e => e.Season).ThenBy(e => e.Episode))
-                {
-                    sb.AppendLine("\t\t{");
-                    sb.AppendLine(string.Format("{0}{1}\"Title\": \"{2}\",", "\t", "\t\t", leaf.Title));
-                    sb.AppendLine(string.Format("{0}{1}\"Season\": \"{2}\",", "\t", "\t\t", leaf.Season));
-                    sb.AppendLine(string.Format("{0}{1}\"Episode\": \"{2}\"", "\t", "\t\t", leaf.Episode));
-                    sb.AppendLine("\t\t},");
-                }
-            }
-            sb.AppendLine("\t}");
-            sb.AppendLine("}");
-
-            return sb.ToString();
-
+            Title = tokens[(int) MovieListItemFieldIndex.Title];
+            EpisodeTitle = tokens[(int)MovieListItemFieldIndex.EpisodeTitle];
+            Season = tokens[(int)MovieListItemFieldIndex.Season];
+            Episode = tokens[(int)MovieListItemFieldIndex.Episode];
+            Year = tokens[(int)MovieListItemFieldIndex.Year];
         }
-
-
-
-
     }
 }

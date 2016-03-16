@@ -8,12 +8,17 @@ namespace DbExtractTest
 {
     public class PlotListItem : IFileItem
     {
-        public int Id { get; set; }
-        public string MovieListItemId { get; set; }
-        public string Season { get; set; }
-        public string Episode { get; set; }
+        public string Id { get; set; }
         public string Plot { get; set; }
 
+        public PlotListItem()
+        {
+        }
 
+        public PlotListItem(List<string> tokens)
+        {
+            Id = tokens[(int) PlotListItemFieldIndex.Id];
+            Plot = tokens[(int) PlotListItemFieldIndex.Plot];
+        }
     }
 }

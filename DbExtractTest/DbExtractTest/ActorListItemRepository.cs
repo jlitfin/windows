@@ -13,53 +13,37 @@ namespace DbExtractTest
     {
         public override IFileItem AddOrUpdate(int fileId, string source)
         {
-            ActorListItem item = null;
             if (string.IsNullOrWhiteSpace(source)) return null;
             var tokens = ParseToTokens(source);
-
+            var item = new ActorListItem(tokens);
             using (var db = new MdbContext())
             {
-                var id = tokens[(int) ActorListItemFieldIndex.ActorListItemId];
-                item = db.ActorListItems.SingleOrDefault(a => a.Id == id);
-                if (item == null)
+                var existing = db.ActorListItems.SingleOrDefault(a => a.Id == item.Id);
+                var appearances = new List<ActorAppearance>();
+                for (var i = (int)ActorListItemFieldIndex.Appearances; i < tokens.Count; ++i)
                 {
-                    item = new ActorListItem
-                    {
-                        Id = id,
-                        FirstName = tokens[(int) ActorListItemFieldIndex.FirstName],
-                        LastName = tokens[(int) ActorListItemFieldIndex.LastName]
-                    };
+                    appearances.Add(ActorAppearanceRepository.Get(item.Id, tokens[i]));
+                }
+                var appearancesToInsert = existing == null
+                    ? appearances
+                    : from a in appearances
+                        where !existing.AppearanceList.Contains(a)
+                        select a;
+                         
+                if (existing == null)
+                {
+                    item.AppearanceList.AddRange(appearancesToInsert);
+                    db.ActorListItems.Add(item);
+                    db.SaveChanges();
+                    return item;
                 }
                 else
                 {
-                    item.FirstName = tokens[(int) ActorListItemFieldIndex.FirstName];
-                    item.LastName = tokens[(int) ActorListItemFieldIndex.LastName];
-                }
-
-                for (var i = (int) ActorListItemFieldIndex.Appearances; i < tokens.Count; ++i)
-                {
-                    var appearance = ActorAppearanceRepository.Get(id, tokens[i]);
-                    if (appearance.Id == 0)
-                    {
-                        //
-                        // add if new and not a dupe by our columns
-                        //
-                        if (item.AppearanceList == null) item.AppearanceList = new List<ActorAppearance>();
-                        if (!item.AppearanceList.Any(a => a.ActorListItemId == appearance.ActorListItemId
-                                 && a.MovieListItemId == appearance.MovieListItemId
-                                 && a.Title == appearance.Title
-                                 && a.Season == appearance.Season
-                                 && a.Episode == appearance.Episode))
-                        {
-                            item.AppearanceList.Add(appearance);
-                        }
-                    }
-                }
-
-                db.ActorListItems.AddOrUpdate(item);
-                db.SaveChanges();
+                    existing.AppearanceList.AddRange(appearancesToInsert);
+                    db.SaveChanges();
+                    return existing;
+                }  
             }
-            return item;
         }
 
 

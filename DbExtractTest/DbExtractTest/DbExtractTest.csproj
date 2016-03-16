@@ -66,16 +66,13 @@
     <Compile Include="IFileItem.cs" />
     <Compile Include="IFileItemRepository.cs" />
     <Compile Include="FileItemRepository.cs" />
-    <Compile Include="MovieKeyFieldIndex.cs" />
     <Compile Include="MovieListItem.cs" />
     <Compile Include="ActorListItemFieldIndex.cs" />
     <Compile Include="MovieListItemRepository.cs" />
     <Compile Include="MovieListItemType.cs" />
-    <Compile Include="MovieListItemEpisode.cs" />
     <Compile Include="MdbConfiguration.cs" />
     <Compile Include="MdbContext.cs" />
     <Compile Include="MdbInitializer.cs" />
-    <Compile Include="MovieListItemEpisodeFieldIndex.cs" />
     <Compile Include="MovieListItemFieldIndex.cs" />
     <Compile Include="PlotListItem.cs" />
     <Compile Include="PlotListItemFieldIndex.cs" />
