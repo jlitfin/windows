@@ -11,11 +11,12 @@ namespace DbExtractTest
         public string Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public List<ActorAppearance> AppearanceList { get; set; }
+
+        public virtual List<ActorAppearance> AppearanceList { get; set; }
 
         public ActorListItem()
         {
-            AppearanceList = new List<ActorAppearance>();
+            //AppearanceList = new List<ActorAppearance>();
         }
 
         public ActorListItem(List<string> tokens)

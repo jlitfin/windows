@@ -11,37 +11,39 @@ namespace DbExtractTest
         public static ActorAppearance Get(string key, string source)
         {
             var tokens = ParseToTokens(source);
-            //
-            // this file doesn't contain the final year token so add an empty to make
-            // the list the correct shape
-            //
-            tokens.Add(Constants.NullFieldValue);
-            var movieItem = new MovieListItem(tokens);
-            var appearance = new ActorAppearance
+            if (tokens != null)
             {
-                ActorListItemId = key,
-                MovieListItemId = movieItem.Id,
-            };
-
-            using (var db = new MdbContext())
-            {
-                var existing =
-                    db.ActorAppearances.SingleOrDefault(
-                        a => a.ActorListItemId == appearance.ActorListItemId
-                             && a.MovieListItemId == appearance.MovieListItemId);
-
-                if (existing != null)
+                var movieItem = new MovieListItem(tokens);
+                var appearance = new ActorAppearance(movieItem.Id, key);
+                using (var db = new MdbContext())
                 {
-                    return existing;
+                    var existing =
+                        db.ActorAppearances.SingleOrDefault(
+                            a => a.ActorListItemId == appearance.ActorListItemId
+                                 && a.MovieListItemId == appearance.MovieListItemId);
+
+                    if (existing != null)
+                    {
+                        return existing;
+                    }
                 }
+
+                return appearance;
             }
 
-            return appearance;
+            return null;
         }
 
         public static List<string> ParseToTokens(string source)
         {
-            return FileItemRepository.ParseMovieItemKey(source);
+            try
+            {
+                return FileItemRepository.ParseMovieItemKey(source);
+            }
+            catch 
+            {
+                return null;
+            }
         }
     }
 }

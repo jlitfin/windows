@@ -18,7 +18,7 @@ namespace DbExtractTest
     internal class Program
     {
         private static int _counter = 0;
-        private const int _linesToProcess = 2000;
+        private const int _linesToProcess = 40000;
 
         private static void Main(string[] args)
         {
@@ -64,6 +64,10 @@ namespace DbExtractTest
                         var i = 0;
 
                         using (var repo = FileItemRepositoryFactory.GetInstance(fileDetail.ItemClassName))
+                        //
+                        // DEBUG
+                        //
+                        using (var debug = new StreamWriter("debug.txt"))
                         {
                             var peek = string.Empty;
                             source = null;
@@ -90,11 +94,21 @@ namespace DbExtractTest
                                         break;
                                     }
                                     sb.AppendLine(peek);
+                                    
+                                    //
+                                    // DEBUG
+                                    //
+                                    debug.WriteLine(peek);
 
                                     if (fileDetail.ReadAheadFor != null)
                                     {
                                         while ((peek = sr.ReadLine()) != null)
                                         {
+                                            //
+                                            // DEBUG
+                                            //
+                                            debug.WriteLine(peek);
+
                                             if (Regex.IsMatch(peek, fileDetail.ReadAheadFor))
                                             {
                                                 source = peek;
@@ -126,21 +140,15 @@ namespace DbExtractTest
                                 catch (Exception ex)
                                 {
                                     errorCount++;
-                                    using (
-                                        var ew = new StreamWriter(string.Format("errorLog.{0}.txt", runtTime.Ticks),
-                                            true))
+                                    using (var ew = new StreamWriter(string.Format("errorLog.{0}.txt", runtTime.Ticks), true))
                                     {
-                                        ew.WriteLine(
-                                            string.Format(
-                                                "ERROR - [{6}] File [{9}]: {0} Source: {1}{2}{3}{4}{5}{7}{8}",
-                                                fileDetail.FileName, source,
-                                                Environment.NewLine, ex.Message,
-                                                Environment.NewLine, ex.StackTrace,
-                                                DateTime.Now.ToLongTimeString(),
-                                                Environment.NewLine,
-                                                ex.InnerException == null
-                                                    ? "No Inner Exception"
-                                                    : ex.InnerException.Message, i));
+                                        ew.WriteLine(FormatException(ex, fileDetail, sb.ToString(), i));
+                                        Exception temp = ex.InnerException;
+                                        while (temp != null)
+                                        {
+                                            ew.WriteLine(FormatException(temp, fileDetail, sb.ToString(), i));
+                                            temp = temp.InnerException;
+                                        }
                                     }
 
                                     if (errorCount >= 10)
@@ -266,7 +274,7 @@ namespace DbExtractTest
                                             ew.WriteLine(
                                                 string.Format(
                                                     "ERROR - [{6}] File [{9}]: {0} Source: {1}{2}{3}{4}{5}{7}{8}",
-                                                    fileDetail.FileName, source,
+                                                    fileDetail.FileName, peek,
                                                     Environment.NewLine, ex.Message,
                                                     Environment.NewLine, ex.StackTrace,
                                                     DateTime.Now.ToLongTimeString(),
@@ -354,6 +362,22 @@ namespace DbExtractTest
             var pad = (int) (id%10);
 
             return string.Format("\r{0} Record: {1}{2}", fan, id, "".PadRight(pad, ' '));
+        }
+
+        private static string FormatException(Exception ex, FileDataDetail fileDetail, string peek, int line)
+        {
+            return string.Format(
+                "ERROR - [{4}] File [{6}]: {0}{2}{7}{2}Source: {1}{2}{3}{2}{5}{2}",
+                fileDetail.FileName, 
+                peek,
+                Environment.NewLine, 
+                ex.Message,
+                DateTime.Now.ToLongTimeString(),
+                ex.InnerException == null
+                    ? "No Inner Exception"
+                    : ex.InnerException.Message, 
+                line,
+                "---------------------------------------------------------------");
         }
     }
 }

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DbExtractTest
 {
-    public class MdbInitializer : DropCreateDatabaseIfModelChanges<MdbContext> // DropCreateDatabaseIfModelChanges<MdbContext> // DropCreateDatabaseAlways<MdbContext>
+    public class MdbInitializer : DropCreateDatabaseAlways<MdbContext> // DropCreateDatabaseIfModelChanges<MdbContext> // DropCreateDatabaseAlways<MdbContext>
     {
         protected override void Seed(MdbContext context)
         {
@@ -27,12 +27,12 @@ namespace DbExtractTest
             if (!context.FileDataDetails.Any())
             {
                 context.FileDataDetails.AddOrUpdate(d => d.FileName,
-                    new FileDataDetail { Id = 1, FileName = "movies.list.gz", ItemClassName = "MovieListItem", LinesAfterFlag = 3, OpenFlag = "MOVIES LIST", TokensPerDatum = 7, ReadAheadFor = null, Active = true },
+                    new FileDataDetail { Id = 1, FileName = "movies.list.gz", ItemClassName = "MovieListItem", LinesAfterFlag = 3, OpenFlag = "MOVIES LIST", TokensPerDatum = 7, ReadAheadFor = null, Active = false },
                     new FileDataDetail { Id = 1, FileName = "actresses.list.gz", ItemClassName = "ActorListItem", LinesAfterFlag = 5, OpenFlag = "THE ACTRESSES LIST", TokensPerDatum = 7, ReadAheadFor = "^[^\\s]", Active = true },
-                    new FileDataDetail { Id = 1, FileName = "actors.list.gz", ItemClassName = "ActorListItem", LinesAfterFlag = 5, OpenFlag = "THE ACTORS LIST", TokensPerDatum = 7, ReadAheadFor = "^[^\\s]", Active = true },
-                    new FileDataDetail { Id = 1, FileName = "plot.list.gz", ItemClassName = "PlotListItem", LinesAfterFlag = 3, OpenFlag = "PLOT SUMMARIES LIST", TokensPerDatum = 4, ReadAheadFor = "^MV: ", Active = true },
-                    new FileDataDetail { Id = 1, FileName = "directors.list.gz", ItemClassName = "DirectorListItem", LinesAfterFlag = 5, OpenFlag = "THE DIRECTORS LIST", TokensPerDatum = 6, ReadAheadFor = "^[^\\s]", Active = true },
-                    new FileDataDetail { Id = 1, FileName = "ratings.list.gz", ItemClassName = "RatingListItem", LinesAfterFlag = 3, OpenFlag = "MOVIE RATINGS REPORT", TokensPerDatum = 4, ReadAheadFor = null, Active = true });
+                    new FileDataDetail { Id = 1, FileName = "actors.list.gz", ItemClassName = "ActorListItem", LinesAfterFlag = 5, OpenFlag = "THE ACTORS LIST", TokensPerDatum = 7, ReadAheadFor = "^[^\\s]", Active = false },
+                    new FileDataDetail { Id = 1, FileName = "plot.list.gz", ItemClassName = "PlotListItem", LinesAfterFlag = 3, OpenFlag = "PLOT SUMMARIES LIST", TokensPerDatum = 4, ReadAheadFor = "^MV: ", Active = false },
+                    new FileDataDetail { Id = 1, FileName = "directors.list.gz", ItemClassName = "DirectorListItem", LinesAfterFlag = 5, OpenFlag = "THE DIRECTORS LIST", TokensPerDatum = 6, ReadAheadFor = "^[^\\s]", Active = false },
+                    new FileDataDetail { Id = 1, FileName = "ratings.list.gz", ItemClassName = "RatingListItem", LinesAfterFlag = 3, OpenFlag = "MOVIE RATINGS REPORT", TokensPerDatum = 4, ReadAheadFor = null, Active = false });
             }
            
 

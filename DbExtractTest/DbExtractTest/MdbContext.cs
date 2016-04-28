@@ -1,4 +1,7 @@
-﻿using System.Data.Entity;
+﻿using System;
+using System.Data.Entity;
+using System.Data.Entity.Validation;
+using System.Text;
 
 
 namespace DbExtractTest
@@ -16,8 +19,33 @@ namespace DbExtractTest
         public DbSet<DirectorListItem> DirectorListItems { get; set; }
         public DbSet<FileDataDetail> FileDataDetails { get; set; }
         public DbSet<MovieListItem> MovieListItems { get; set; }
-        //public DbSet<MovieListItemType> MovieListItemTypes { get; set; }
         public DbSet<PlotListItem> PlotListItems { get; set; }
         public DbSet<RatingListItem> RatingListItems { get; set; }
+
+        public override int SaveChanges()
+        {
+            try
+            {
+                return base.SaveChanges();
+            }
+            catch (DbEntityValidationException ex)
+            {
+                var sb = new StringBuilder();
+                foreach (var failure in ex.EntityValidationErrors)
+                {
+                    sb.AppendFormat("{0} failed validation\n", failure.Entry.Entity.GetType());
+                    foreach (var error in failure.ValidationErrors)
+                    {
+                        sb.AppendFormat("- {0} : {1}", error.PropertyName, error.ErrorMessage);
+                        sb.AppendLine();
+                    }
+                }
+
+                throw new DbEntityValidationException(
+                    "Entity Validation Failed - errors follow:\n" +
+                    sb.ToString(), ex
+                    ); // Add the original exception as the innerException
+            }  
+        }
     }
 }
