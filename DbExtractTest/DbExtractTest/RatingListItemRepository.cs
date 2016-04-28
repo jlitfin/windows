@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity.Core.Metadata.Edm;
 using System.Data.Entity.Migrations;
 using System.Linq;
 
@@ -13,16 +14,14 @@ namespace DbExtractTest
             var tokens = ParseToTokens(source);
             using (var db = new MdbContext())
             {
-                var keyTokens = ParseMovieItemKey(tokens[(int) RatingListItemFieldIndex.Key]);
+                var movieItem =
+                    new MovieListItem(MovieListItemRepository.ParseToTokens(tokens[(int) RatingListItemFieldIndex.Key]));
                 var item = new RatingListItem
                 {
                     Distribution = tokens[(int) RatingListItemFieldIndex.Distribution],
                     Rank = Decimal.Parse(tokens[(int) RatingListItemFieldIndex.Rank]),
                     Votes = Int64.Parse(tokens[(int) RatingListItemFieldIndex.Votes]),
-                    //MovieListItemId = keyTokens[(int) MovieKeyFieldIndex.MovieListItemId],
-                    //Title = keyTokens[(int) MovieKeyFieldIndex.Title],
-                    //Season = keyTokens[(int) MovieKeyFieldIndex.Season],
-                    //Episode = keyTokens[(int) MovieKeyFieldIndex.Episode]
+                    MovieListItemId = movieItem.Id
                 };
 
                 var check =
@@ -31,7 +30,7 @@ namespace DbExtractTest
 
                 if (check == null)
                 {
-                    db.RatingListItems.AddOrUpdate(item);
+                    db.RatingListItems.Add(item);
                     db.SaveChanges();
                     return item;
                 }
@@ -39,11 +38,9 @@ namespace DbExtractTest
                 check.Distribution = item.Distribution;
                 check.Rank = item.Rank;
                 check.Votes = item.Votes;
-                db.RatingListItems.AddOrUpdate(check);
                 db.SaveChanges();
                 return check;
             }
-
         }
 
         public override List<string> ParseToTokens(string source)

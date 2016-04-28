@@ -13,7 +13,6 @@ namespace DbExtractTest
 
         public override IFileItem AddOrUpdate(int fileId, string source)
         {
-            
             if (string.IsNullOrWhiteSpace(source)) return null;
             var tokens = ParseToTokens(source);
             using (var db = new MdbContext())
@@ -26,12 +25,11 @@ namespace DbExtractTest
                     db.SaveChanges();
                     return item;
                 }
-                else
-                {
-                    existing.Plot = item.Plot;
-                    db.SaveChanges();
-                    return existing;
-                }            
+
+                existing.Plot = item.Plot;
+                db.SaveChanges();
+                return existing;
+
             }
         }
 
@@ -41,7 +39,7 @@ namespace DbExtractTest
             if (source.StartsWith("MV: "))
             {
                 tokens = new List<string>();
-                var targetLine = source.Substring(0, source.IndexOf(Environment.NewLine));
+                var targetLine = source.Substring(4, source.IndexOf(Environment.NewLine));
                 tokens.Add(new MovieListItem(ParseMovieItemKey(targetLine)).Id);
 
                 var txt = source.Substring(targetLine.Length);

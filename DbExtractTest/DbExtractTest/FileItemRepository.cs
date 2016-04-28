@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Data.Common;
+using System.Data.Odbc;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -92,72 +95,131 @@ namespace DbExtractTest
 
         public static List<string> ParseMovieItemKey(string source)
         {
-            var tokens = new List<string>();
-            // movie item key
-            var ndx = 0;
-            var str = source.Trim();
-            var odx = FindKeyDate(0, str);
-            var key = str.Substring(ndx, odx - ndx + 1).Trim();
-            tokens.Add(key);
-
-            // check for episode
-            ndx = NextCharacter(odx + 1, str);
-            if (ndx < str.Length && str[ndx].Equals('{'))
+            if (!ValidateMovieItemKeyString(source))
             {
-                // series segment
-                odx = str.IndexOf("(#", ++ndx);
-                if (odx > 0)
-                {
-                    //
-                    // check for title segment contains key string
-                    //
-                    var qdx = str.IndexOf("(#", odx + 2);
-                    if (qdx > 0) odx = qdx;
+                throw new Exception(string.Format("Invalid movie key format: {0}", source));
+            }
 
-                    // title segment
-                    if (odx != (ndx + 1))
+            var tokens = new List<string>();
+            try
+            {   
+                // movie item key
+                var ndx = 0;
+                var str = source.Trim();
+                var odx = FindKeyDate(0, str);
+                var key = str.Substring(ndx, odx - ndx + 1).Trim();
+                tokens.Add(key);
+
+                ndx = NextCharacter(odx + 1, str);
+                // check for type code and skip it
+                if (ndx < str.Length && str[ndx].Equals('('))
+                {
+                    odx = str.IndexOf(')', ndx + 1);
+                    ndx = NextCharacter(odx + 1, str);
+                }
+
+                // check for episode
+                if (ndx < str.Length && str[ndx].Equals('{'))
+                {
+                    // series segment
+                    odx = str.IndexOf("(#", ++ndx);
+                    var rdx = str.IndexOf("}", ndx);
+                    if (odx >= ndx && odx < rdx)
                     {
-                        tokens.Add(str.Substring(ndx, odx - ndx).Trim());
+                        //
+                        // check for title segment contains key string
+                        //
+                        var qdx = str.IndexOf("(#", odx + 2);
+                        if (qdx > odx && qdx < rdx) odx = qdx;
+
+                        // title segment
+                        if (odx != (ndx + 1))
+                        {
+                            tokens.Add(str.Substring(ndx, odx - ndx).Trim());
+                        }
+                        else
+                        {
+                            tokens.Add(Constants.NullFieldValue);
+                        }
+
+                        // season / episode segment
+                        ndx = str.IndexOf(")", odx);
+                        var pdx = str.IndexOf(".", odx);
+
+                        tokens.Add(str.Substring(odx + 2, pdx - (odx + 2)).Trim());
+                        tokens.Add(str.Substring(pdx + 1, ndx - (pdx + 1)).Trim());
+                    }
+                    else if (str[ndx] == '(')
+                    {
+                        odx = str.IndexOf(")", ndx);
+                        if (odx > 0 && odx > ndx)
+                        {
+                            var val = str.Substring(ndx + 1, odx - (ndx + 1));
+                            tokens.Add(val);
+                        }
+                        tokens.Add(Constants.NullFieldValue);
+                        tokens.Add(Constants.NullFieldValue);
                     }
                     else
                     {
+                        odx = str.IndexOf("}");
+                        tokens.Add(str.Substring(ndx + 1, odx - (ndx + 1)));
+                        tokens.Add(Constants.NullFieldValue);
                         tokens.Add(Constants.NullFieldValue);
                     }
-
-                    // season / episode segment
-                    ndx = str.IndexOf(")", odx);
-                    var pdx = str.IndexOf(".", odx);
-
-                    tokens.Add(str.Substring(odx + 2, pdx - (odx + 2)).Trim());
-                    tokens.Add(str.Substring(pdx + 1, ndx - (pdx + 1)).Trim());
-                }
-                else if (str[ndx] == '(')
-                {
-                    odx = str.IndexOf(")", ndx);
-                    if (odx > 0 && odx > ndx)
-                    {
-                        var val = str.Substring(ndx + 1, odx - (ndx + 1));
-                        tokens.Add(val);
-                    }
-                    tokens.Add(Constants.NullFieldValue);
-                    tokens.Add(Constants.NullFieldValue);
                 }
                 else
                 {
-                    odx = str.IndexOf("}");
-                    tokens.Add(str.Substring(ndx + 1, odx - (ndx + 1)));
+                    tokens.Add(Constants.NullFieldValue);
                     tokens.Add(Constants.NullFieldValue);
                     tokens.Add(Constants.NullFieldValue);
                 }
             }
-            else
+            catch (Exception)
             {
-                tokens.Add(Constants.NullFieldValue);
-                tokens.Add(Constants.NullFieldValue);
-                tokens.Add(Constants.NullFieldValue);
+
+                throw new Exception(string.Format("Could not parse movie item key: {0}", source));
             }
 
             return tokens;
+        }
+
+        public static bool ValidateMovieItemKeyString(string source)
+        {
+            var openParenCount  = 0;
+            var closeParenCount = 0;
+            var openBracketCount = 0;
+            var closeBracketCount = 0;
+            for (var i = 0; i < source.Length; ++i)
+            {
+                if (source[i] == '(')
+                {
+                    if (closeParenCount > openParenCount) return false;
+
+                    openParenCount++;
+                }
+                if (source[i] == ')')
+                {
+                    closeParenCount++;
+                }
+
+                if (source[i] == '{')
+                {
+                    if (closeBracketCount > openBracketCount) return false;
+
+                    openBracketCount++;
+                }
+                if (source[i] == '}')
+                {
+                    closeBracketCount++;
+                }
+            }
+
+            if (openParenCount != closeParenCount) return false;
+
+
+
+            return true;
         }
 
         public void Dispose()

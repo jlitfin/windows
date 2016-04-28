@@ -10,13 +10,14 @@ namespace DbExtractTest
     {
         private string _uniqueKey;
 
+        [MaxLength(512)]
         public string Id
         {
             get
             {
                 if (string.IsNullOrEmpty(_uniqueKey))
                 {
-                    _uniqueKey = string.Format("{0}|{1}|{2}|{3}", Title, EpisodeTitle, Season, Episode);
+                    _uniqueKey = string.Format("{0}|{1}|{2}|{3}", Title, EpisodeTitle, Season, Episode).ToUpper();
                 }
                 return _uniqueKey;
             }
@@ -35,10 +36,11 @@ namespace DbExtractTest
 
         public MovieListItem(List<string> tokens)
         {
-            var count = Enum.GetNames(typeof (MovieListItemFieldIndex)).Length;
-            if (tokens.Count != count)
-                throw new ArgumentOutOfRangeException(
-                    "Attempt made to build MovieListItem with incorrect number of tokens.");
+            var count = Enum.GetNames(typeof(MovieListItemFieldIndex)).Length;
+            while (tokens.Count < count)
+            {
+                tokens.Add(Constants.NullFieldValue);
+            }
 
             Title = tokens[(int) MovieListItemFieldIndex.Title];
             EpisodeTitle = tokens[(int)MovieListItemFieldIndex.EpisodeTitle];

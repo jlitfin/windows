@@ -26,7 +26,8 @@ namespace DbExtractTest
             return null;
         }
 
-        public override List<string> ParseToTokens(string source)
+
+        public static List<string> ParseToTokens(string source)
         {
             var ret = new List<string>();
             var ndx = NextDelimiter(source.Length - 1, source, '\t', 1, true);
@@ -37,7 +38,5 @@ namespace DbExtractTest
             }
             return ret;
         }
-
-
     }
 }
