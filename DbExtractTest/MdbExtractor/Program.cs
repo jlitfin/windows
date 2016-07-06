@@ -4,14 +4,13 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using MdbExtractor;
 
-namespace DbExtractTest
+namespace MdbExtractor
 {
     internal class Program
     {
         private static int _counter = 0;
-        private const int _linesToProcess = 10000;
+        private const int _linesToProcess = 40000;
 
         private static void Main(string[] args)
         {
