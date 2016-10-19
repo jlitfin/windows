@@ -1,0 +1,148 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{7A6D31D1-D904-4619-9475-0B6CC7CBFE42}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>JPL.Lib.MediaLibraryReader</RootNamespace>
+    <AssemblyName>MediaLibraryDAL</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Practices.EnterpriseLibrary.Common, Version=5.0.414.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\Source\Library\EnterpriseLibrary\Microsoft.Practices.EnterpriseLibrary.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.EnterpriseLibrary.Data, Version=5.0.414.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\Source\Library\EnterpriseLibrary\Microsoft.Practices.EnterpriseLibrary.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Album.cs" />
+    <Compile Include="AlbumRepository.cs" />
+    <Compile Include="AlbumTrack.cs" />
+    <Compile Include="AlbumTrackRepository.cs" />
+    <Compile Include="Artist.cs" />
+    <Compile Include="ArtistRepository.cs" />
+    <Compile Include="Audio.cs" />
+    <Compile Include="AudioRepository.cs" />
+    <Compile Include="ClatworthyResult.cs" />
+    <Compile Include="Constants.cs" />
+    <Compile Include="GenreType.cs" />
+    <Compile Include="GenreTypeRepository.cs" />
+    <Compile Include="ImdbSearch.cs" />
+    <Compile Include="ImdbSearchRepository.cs" />
+    <Compile Include="KeyWord.cs" />
+    <Compile Include="KeyWordIndex.cs" />
+    <Compile Include="KeyWordIndexRepository.cs" />
+    <Compile Include="KeyWordRepository.cs" />
+    <Compile Include="KindType.cs" />
+    <Compile Include="KindTypeRepository.cs" />
+    <Compile Include="PoromenosResult.cs" />
+    <Compile Include="Post.cs" />
+    <Compile Include="PostRepository.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RepositoryBase.cs" />
+    <Compile Include="SkipWord.cs" />
+    <Compile Include="SystemLog.cs" />
+    <Compile Include="SystemLogRepository.cs" />
+    <Compile Include="Thread.cs" />
+    <Compile Include="ThreadRepository.cs" />
+    <Compile Include="ThreadUserMap.cs" />
+    <Compile Include="ThreadUserMapRepository.cs" />
+    <Compile Include="Track.cs" />
+    <Compile Include="TrackRepository.cs" />
+    <Compile Include="Video.cs" />
+    <Compile Include="VideoRepository.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Database\deploy\AlbumLoad.sql" />
+    <Content Include="Database\deploy\Data.sql" />
+    <Content Include="Database\deploy\Procedures.sql" />
+    <Content Include="Database\deploy\WebContentTables.sql" />
+    <Content Include="Database\procs\prc_key_word_index_ups.sql" />
+    <Content Include="Database\procs\prc_key_word_ups.sql" />
+    <Content Include="Database\procs\prc_post_ins.sql" />
+    <Content Include="Database\procs\prc_post_sel.sql" />
+    <Content Include="Database\procs\prc_post_sel_by_thread.sql" />
+    <Content Include="Database\procs\prc_post_upd.sql" />
+    <Content Include="Database\procs\prc_skip_word_sel.sql" />
+    <Content Include="Database\procs\prc_system_log_sel_count.sql" />
+    <Content Include="Database\procs\prc_album_track_rpl.sql" />
+    <Content Include="Database\procs\prc_album_ins.sql" />
+    <Content Include="Database\procs\prc_album_sel.sql" />
+    <Content Include="Database\procs\prc_album_track_ins.sql" />
+    <Content Include="Database\procs\prc_album_track_sel.sql" />
+    <Content Include="Database\procs\prc_album_track_upd.sql" />
+    <Content Include="Database\procs\prc_album_track_ups.sql" />
+    <Content Include="Database\procs\prc_album_upd.sql" />
+    <Content Include="Database\procs\prc_album_ups.sql" />
+    <Content Include="Database\procs\prc_artist_ins.sql" />
+    <Content Include="Database\procs\prc_artist_sel.sql" />
+    <Content Include="Database\procs\prc_artist_upd.sql" />
+    <Content Include="Database\procs\prc_artist_ups.sql" />
+    <Content Include="Database\procs\prc_audio_ins.sql" />
+    <Content Include="Database\procs\prc_audio_sel.sql" />
+    <Content Include="Database\procs\prc_audio_upd.sql" />
+    <Content Include="Database\procs\prc_audio_ups.sql" />
+    <Content Include="Database\procs\prc_genre_type_ins.sql" />
+    <Content Include="Database\procs\prc_genre_type_sel.sql" />
+    <Content Include="Database\procs\prc_genre_type_upd.sql" />
+    <Content Include="Database\procs\prc_genre_type_ups.sql" />
+    <Content Include="Database\procs\prc_imdb_search_ins.sql" />
+    <Content Include="Database\procs\prc_imdb_search_sel.sql" />
+    <Content Include="Database\procs\prc_imdb_search_upd.sql" />
+    <Content Include="Database\procs\prc_kind_type_ins.sql" />
+    <Content Include="Database\procs\prc_kind_type_sel.sql" />
+    <Content Include="Database\procs\prc_kind_type_upd.sql" />
+    <Content Include="Database\procs\prc_kind_type_ups.sql" />
+    <Content Include="Database\procs\prc_system_log_ins.sql" />
+    <Content Include="Database\procs\prc_system_log_sel.sql" />
+    <Content Include="Database\procs\prc_thread_sel.sql" />
+    <Content Include="Database\procs\prc_thread_user_map_sel.sql" />
+    <Content Include="Database\procs\prc_thread_user_map_ups.sql" />
+    <Content Include="Database\procs\prc_track_ins.sql" />
+    <Content Include="Database\procs\prc_track_sel.sql" />
+    <Content Include="Database\procs\prc_track_upd.sql" />
+    <Content Include="Database\procs\prc_track_ups.sql" />
+    <Content Include="Database\deploy\Tables.sql" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
