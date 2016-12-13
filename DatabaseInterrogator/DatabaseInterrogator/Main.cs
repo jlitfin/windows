@@ -157,34 +157,28 @@ namespace DatabaseInterrogator
                 int c2 = 0;
                 int c3 = 0;
                 int c4 = 0;
+                int c5 = 0;
                 int buffer = 2;
                 foreach (var sr in list)
                 {
-                    if (!sr.SearchableType.Equals("TEXT"))
-                    {
-                        c1 = (sr.ObjectType.Length > c1) ? sr.ObjectType.Length : c1;
-                        c2 = (sr.ObjectSearchable.Length > c2) ? sr.ObjectSearchable.Length : c2;
-                        c3 = (sr.Server.Length > c3) ? sr.Server.Length : c3;
-                        c4 = (sr.Database.Length > c4) ? sr.Database.Length : c4;
-                    }
-                    else
-                    {
-                        c1 = (sr.ObjectType.Length > c1) ? sr.ObjectType.Length : c1;
-                        c2 = (sr.ObjectName.Length > c2) ? sr.ObjectName.Length : c2;
-                        c3 = (sr.Server.Length > c3) ? sr.Server.Length : c3;
-                        c4 = (sr.Database.Length > c4) ? sr.Database.Length : c4;
-                    }
+                    c1 = (sr.ObjectType.Length > c1) ? sr.ObjectType.Length : c1;
+                    c2 = (sr.ObjectSchema.Length > c2) ? sr.ObjectSchema.Length : c2;
+                    c3 = sr.SearchableType.Equals("TEXT") ?
+                            (sr.ObjectName.Length > c3) ? sr.ObjectName.Length : c3 :
+                            (sr.ObjectSearchable.Length > c3) ? sr.ObjectSearchable.Length : c3;
+                    c4 = (sr.Server.Length > c4) ? sr.Server.Length : c4;
+                    c5 = (sr.Database.Length > c5) ? sr.Database.Length : c5;
                 }
-                string format = "  {0, -" + (c1 + buffer).ToString() + "}{1, -" + (c2 + buffer).ToString() + "}{2, -" + (c3 + buffer).ToString() + "}{3, -" + (c3 + buffer).ToString() + "}\r\n";
-                this.txtSearchResult.AppendText(string.Format(format, "TYPE", "OBJECT", "SERVER", "DATABASE"));
-                this.txtSearchResult.AppendText("  -".PadRight(2 + c1 + c2 + c3 + c4 + (buffer * 3), '-') + "\r\n");
+                string format = "  {0, -" + (c1 + buffer).ToString() + "}{1, -" + (c2 + buffer).ToString() + "}{2, -" + (c3 + buffer).ToString() + "}{3, -" + (c4 + buffer).ToString() + "}{4, -" + (c5 + buffer).ToString() + "}\r\n";
+                this.txtSearchResult.AppendText(string.Format(format, "TYPE", "SCHEMA", "OBJECT", "SERVER", "DATABASE"));
+                this.txtSearchResult.AppendText("  -".PadRight(2 + c1 + c2 + c3 + c4 + c5 + (buffer * 3), '-') + "\r\n");
                 
                 foreach (var sr in list)
                 {
                     if (sr.SearchableType.Equals("TEXT"))
                     {
                         displayText.AppendLine();
-                        displayText.Append(string.Format(format, sr.ObjectType, sr.ObjectName, sr.Server, sr.Database));
+                        displayText.Append(string.Format(format, sr.ObjectType, sr.ObjectSchema, sr.ObjectName, sr.Server, sr.Database));
                         StringBuilder txt = new StringBuilder();
 
                         Encoder enc = Encoding.Default.GetEncoder();
@@ -208,7 +202,7 @@ namespace DatabaseInterrogator
                     }
                     else
                     {
-                        displayText.Append(string.Format(format, sr.ObjectType, sr.ObjectSearchable, sr.Server, sr.Database));
+                        displayText.Append(string.Format(format, sr.ObjectType, sr.ObjectSchema, sr.ObjectSearchable, sr.Server, sr.Database));
                     }
                 }
             }
@@ -245,7 +239,8 @@ namespace DatabaseInterrogator
             }
             catch (Exception ex)
             {
-                log(ex.Message);
+                log(ex.Message, true);
+                log(ex.StackTrace, true);
             }
             finally
             {
@@ -277,14 +272,16 @@ namespace DatabaseInterrogator
                             {
                                 log(string.Format("error communicating with db: {0}", db.Name), true);
                                 log(string.Format("{0}", ex.Message), true);
+                                log(ex.StackTrace, true);
                             }
                         }
                     }
-                    displaySearchResult(cumulative.OrderBy(r => r.ObjectType).ThenBy(r => r.ObjectSearchable).ToList());
+                    displaySearchResult(cumulative.OrderBy(r => r.ObjectSchema).ThenBy(r => r.ObjectType).ThenBy(r => r.ObjectSearchable).ToList());
                 }
                 catch (Exception ex)
                 {
                     log(ex.Message, true);
+                    log(ex.StackTrace, true);
                 }
                 finally
                 {
@@ -374,6 +371,7 @@ namespace DatabaseInterrogator
                 catch (Exception ex)
                 {
                     this.txtComparResult.Text = ex.Message;
+                    log(ex.StackTrace, true);
                 }
                 finally
                 {
@@ -406,7 +404,8 @@ namespace DatabaseInterrogator
             }
             catch (Exception ex)
             {
-                log(ex.Message);
+                log(ex.Message, true);
+                log(ex.StackTrace, true);
             }
             finally
             {

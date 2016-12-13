@@ -9,6 +9,7 @@ namespace DatabaseConnector
     public class SearchResult
     {
         public string ObjectName { get; set; }
+        public string ObjectSchema { get; set; }
         public string ObjectType { get; set; }
         public string ObjectSearchable { get; set; }
         public string SearchableType { get; set; }

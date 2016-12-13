@@ -732,6 +732,7 @@ namespace DatabaseConnector
                               Database = db.Name,
                               QueryString = queryString,
                               ObjectName = t.ObjectName,
+                              ObjectSchema = t.Schema,
                               ObjectSearchable = t.ObjectName,
                               ObjectType = "TABLE",
                               SearchableType = "NAME"
@@ -746,6 +747,7 @@ namespace DatabaseConnector
                                     Database = db.Name,
                                     QueryString = queryString,
                                     ObjectName = c.ObjectName,
+                                    ObjectSchema = c.Schema,
                                     ObjectSearchable = c.Table + "." + c.ObjectName,
                                     ObjectType = "COLUMN",
                                     SearchableType = "NAME"
@@ -760,6 +762,7 @@ namespace DatabaseConnector
                                 Database = db.Name,
                                 QueryString = queryString,
                                 ObjectName = r.ObjectName,
+                                ObjectSchema = r.Schema,
                                 ObjectSearchable = r.ObjectName,
                                 ObjectType = "ZPROC",
                                 SearchableType = "ZPROC"
@@ -775,6 +778,7 @@ namespace DatabaseConnector
                                     Database = db.Name,
                                     QueryString = queryString,
                                     ObjectName = r.ObjectName,
+                                    ObjectSchema = r.Schema,
                                     ObjectSearchable = r.Text,
                                     ObjectType = "ZPROC",
                                     SearchableType = "TEXT"
@@ -827,7 +831,7 @@ namespace DatabaseConnector
             }
             catch (Exception ex)
             {
-                message = ex.Message;
+                message = string.Format("{0} /r/n {1}", ex.Message, ex.StackTrace);
             }
             return false;
         }

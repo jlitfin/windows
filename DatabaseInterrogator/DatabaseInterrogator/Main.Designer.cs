@@ -39,6 +39,8 @@
             this.panel2 = new System.Windows.Forms.Panel();
             this.lbDatabases = new System.Windows.Forms.ListBox();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.btnSelectAll = new System.Windows.Forms.Button();
+            this.btnDeselectAllDbs = new System.Windows.Forms.Button();
             this.tabContext = new System.Windows.Forms.TabControl();
             this.tabSearch = new System.Windows.Forms.TabPage();
             this.pnlSearchControls = new System.Windows.Forms.Panel();
@@ -57,8 +59,6 @@
             this.cboCompareServer = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
             this.btnCompare = new System.Windows.Forms.Button();
-            this.btnDeselectAllDbs = new System.Windows.Forms.Button();
-            this.btnSelectAll = new System.Windows.Forms.Button();
             this.pnlTop.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitMain)).BeginInit();
             this.splitMain.Panel1.SuspendLayout();
@@ -193,7 +193,7 @@
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.panel2.Location = new System.Drawing.Point(0, 0);
-            this.panel2.MinimumSize = new System.Drawing.Size(250, 0);
+            this.panel2.MinimumSize = new System.Drawing.Size(250, 4);
             this.panel2.Name = "panel2";
             this.panel2.Padding = new System.Windows.Forms.Padding(5);
             this.panel2.Size = new System.Drawing.Size(257, 564);
@@ -224,6 +224,31 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(243, 31);
             this.panel1.TabIndex = 0;
+            // 
+            // btnSelectAll
+            // 
+            this.btnSelectAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSelectAll.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnSelectAll.Location = new System.Drawing.Point(134, 3);
+            this.btnSelectAll.Name = "btnSelectAll";
+            this.btnSelectAll.Size = new System.Drawing.Size(106, 23);
+            this.btnSelectAll.TabIndex = 7;
+            this.btnSelectAll.Text = " select all";
+            this.btnSelectAll.UseVisualStyleBackColor = true;
+            this.btnSelectAll.Visible = false;
+            this.btnSelectAll.Click += new System.EventHandler(this.btnSelectAll_Click);
+            // 
+            // btnDeselectAllDbs
+            // 
+            this.btnDeselectAllDbs.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnDeselectAllDbs.Location = new System.Drawing.Point(3, 3);
+            this.btnDeselectAllDbs.Name = "btnDeselectAllDbs";
+            this.btnDeselectAllDbs.Size = new System.Drawing.Size(106, 23);
+            this.btnDeselectAllDbs.TabIndex = 6;
+            this.btnDeselectAllDbs.Text = " deselect all";
+            this.btnDeselectAllDbs.UseVisualStyleBackColor = true;
+            this.btnDeselectAllDbs.Visible = false;
+            this.btnDeselectAllDbs.Click += new System.EventHandler(this.btnDeselectAllDbs_Click);
             // 
             // tabContext
             // 
@@ -431,31 +456,6 @@
             this.btnCompare.UseVisualStyleBackColor = true;
             this.btnCompare.Click += new System.EventHandler(this.btnCompare_Click);
             // 
-            // btnDeselectAllDbs
-            // 
-            this.btnDeselectAllDbs.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnDeselectAllDbs.Location = new System.Drawing.Point(3, 3);
-            this.btnDeselectAllDbs.Name = "btnDeselectAllDbs";
-            this.btnDeselectAllDbs.Size = new System.Drawing.Size(106, 23);
-            this.btnDeselectAllDbs.TabIndex = 6;
-            this.btnDeselectAllDbs.Text = " deselect all";
-            this.btnDeselectAllDbs.UseVisualStyleBackColor = true;
-            this.btnDeselectAllDbs.Visible = false;
-            this.btnDeselectAllDbs.Click += new System.EventHandler(this.btnDeselectAllDbs_Click);
-            // 
-            // btnSelectAll
-            // 
-            this.btnSelectAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSelectAll.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnSelectAll.Location = new System.Drawing.Point(134, 3);
-            this.btnSelectAll.Name = "btnSelectAll";
-            this.btnSelectAll.Size = new System.Drawing.Size(106, 23);
-            this.btnSelectAll.TabIndex = 7;
-            this.btnSelectAll.Text = " select all";
-            this.btnSelectAll.UseVisualStyleBackColor = true;
-            this.btnSelectAll.Visible = false;
-            this.btnSelectAll.Click += new System.EventHandler(this.btnSelectAll_Click);
-            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -464,7 +464,7 @@
             this.Controls.Add(this.splitMain);
             this.Controls.Add(this.pnlTop);
             this.Name = "Main";
-            this.Text = "Main";
+            this.Text = "Interrogator";
             this.Load += new System.EventHandler(this.Main_Load);
             this.pnlTop.ResumeLayout(false);
             this.pnlTop.PerformLayout();
