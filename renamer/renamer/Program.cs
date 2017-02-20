@@ -53,7 +53,7 @@ namespace renamer
 
                 foreach (var f in toMove)
                 {
-                    File.Move(f.FullName, string.Format("{0}\\{1}.jpg", destinationDir.FullName, f.Name));
+                    File.Copy(f.FullName, string.Format("{0}\\{1}.jpg", destinationDir.FullName, f.Name));
                 }
             }
             Console.WriteLine("Processing complete.");
