@@ -60,6 +60,7 @@
             this.cboCompareServer = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
             this.btnCompare = new System.Windows.Forms.Button();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
             this.pnlTop.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitMain)).BeginInit();
             this.splitMain.Panel1.SuspendLayout();
@@ -255,6 +256,7 @@
             // 
             this.tabContext.Controls.Add(this.tabSearch);
             this.tabContext.Controls.Add(this.tabCompare);
+            this.tabContext.Controls.Add(this.tabPage1);
             this.tabContext.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabContext.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tabContext.Location = new System.Drawing.Point(0, 0);
@@ -457,6 +459,16 @@
             this.btnCompare.UseVisualStyleBackColor = true;
             this.btnCompare.Click += new System.EventHandler(this.btnCompare_Click);
             // 
+            // tabPage1
+            // 
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(1003, 538);
+            this.tabPage1.TabIndex = 2;
+            this.tabPage1.Text = "tabPage1";
+            this.tabPage1.UseVisualStyleBackColor = true;
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -526,5 +538,6 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btnDeselectAllDbs;
         private System.Windows.Forms.Button btnSelectAll;
+        private System.Windows.Forms.TabPage tabPage1;
     }
 }
