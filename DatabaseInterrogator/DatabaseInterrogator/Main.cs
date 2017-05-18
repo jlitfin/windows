@@ -11,6 +11,14 @@ using System.Windows.Forms;
 
 using DatabaseConnector;
 
+//
+// BG    = 30,30,30
+// FG    = 220,220,220
+// H     = 38,79,120
+// CTRL  = 45,45,48
+// CTRL2 = 51,51,51
+// SPC   = 184,215,120
+
 namespace DatabaseInterrogator
 {
     public partial class Main : Form
@@ -78,7 +86,7 @@ namespace DatabaseInterrogator
             foreach (var n in indexes)
             {
                 this.txtSearchResult.Select(n, str.Length);
-                this.txtSearchResult.SelectionBackColor = Color.Orange;
+                this.txtSearchResult.SelectionBackColor = Color.FromArgb(38, 79, 120);
             }
             
             

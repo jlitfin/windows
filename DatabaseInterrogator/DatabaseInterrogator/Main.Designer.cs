@@ -91,8 +91,11 @@
             // 
             // txtOutput
             // 
+            this.txtOutput.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
+            this.txtOutput.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.txtOutput.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtOutput.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtOutput.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(79)))), ((int)(((byte)(120)))));
             this.txtOutput.Location = new System.Drawing.Point(0, 0);
             this.txtOutput.Multiline = true;
             this.txtOutput.Name = "txtOutput";
@@ -102,18 +105,24 @@
             // 
             // btnAddServer
             // 
+            this.btnAddServer.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
+            this.btnAddServer.FlatAppearance.BorderSize = 0;
+            this.btnAddServer.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnAddServer.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnAddServer.Location = new System.Drawing.Point(365, 23);
             this.btnAddServer.Name = "btnAddServer";
             this.btnAddServer.Size = new System.Drawing.Size(84, 24);
             this.btnAddServer.TabIndex = 6;
             this.btnAddServer.Text = "add";
-            this.btnAddServer.UseVisualStyleBackColor = true;
+            this.btnAddServer.UseVisualStyleBackColor = false;
             this.btnAddServer.Click += new System.EventHandler(this.btnAddServer_Click);
             // 
             // cboServers
             // 
+            this.cboServers.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
+            this.cboServers.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.cboServers.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cboServers.ForeColor = System.Drawing.Color.Gainsboro;
             this.cboServers.FormattingEnabled = true;
             this.cboServers.Location = new System.Drawing.Point(16, 24);
             this.cboServers.Name = "cboServers";
@@ -123,23 +132,28 @@
             // 
             // btnDeleteServer
             // 
+            this.btnDeleteServer.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
+            this.btnDeleteServer.FlatAppearance.BorderSize = 0;
+            this.btnDeleteServer.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnDeleteServer.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnDeleteServer.Location = new System.Drawing.Point(454, 23);
             this.btnDeleteServer.Name = "btnDeleteServer";
             this.btnDeleteServer.Size = new System.Drawing.Size(84, 24);
             this.btnDeleteServer.TabIndex = 8;
             this.btnDeleteServer.Text = "delete";
-            this.btnDeleteServer.UseVisualStyleBackColor = true;
+            this.btnDeleteServer.UseVisualStyleBackColor = false;
             this.btnDeleteServer.Click += new System.EventHandler(this.btnDeleteServer_Click);
             // 
             // pnlTop
             // 
+            this.pnlTop.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
             this.pnlTop.Controls.Add(this.cboServers);
             this.pnlTop.Controls.Add(this.btnDeleteServer);
             this.pnlTop.Controls.Add(this.lblConnection);
             this.pnlTop.Controls.Add(this.btnAddServer);
             this.pnlTop.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlTop.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.pnlTop.ForeColor = System.Drawing.Color.Gainsboro;
             this.pnlTop.Location = new System.Drawing.Point(0, 0);
             this.pnlTop.Name = "pnlTop";
             this.pnlTop.Size = new System.Drawing.Size(1276, 61);
@@ -166,6 +180,7 @@
             // 
             // splitDbSelector
             // 
+            this.splitDbSelector.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
             this.splitDbSelector.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitDbSelector.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.splitDbSelector.Location = new System.Drawing.Point(0, 0);
@@ -179,7 +194,7 @@
             // 
             // splitDbSelector.Panel2
             // 
-            this.splitDbSelector.Panel2.BackColor = System.Drawing.Color.White;
+            this.splitDbSelector.Panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
             this.splitDbSelector.Panel2.Controls.Add(this.tabContext);
             this.splitDbSelector.Size = new System.Drawing.Size(1276, 564);
             this.splitDbSelector.SplitterDistance = 257;
@@ -188,7 +203,8 @@
             // 
             // panel2
             // 
-            this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
+            this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel2.Controls.Add(this.lbDatabases);
             this.panel2.Controls.Add(this.panel1);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -202,52 +218,61 @@
             // 
             // lbDatabases
             // 
-            this.lbDatabases.BackColor = System.Drawing.SystemColors.Control;
+            this.lbDatabases.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
             this.lbDatabases.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.lbDatabases.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lbDatabases.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbDatabases.ForeColor = System.Drawing.Color.Gainsboro;
             this.lbDatabases.FormattingEnabled = true;
             this.lbDatabases.Location = new System.Drawing.Point(5, 36);
             this.lbDatabases.Name = "lbDatabases";
             this.lbDatabases.SelectionMode = System.Windows.Forms.SelectionMode.MultiSimple;
-            this.lbDatabases.Size = new System.Drawing.Size(243, 519);
+            this.lbDatabases.Size = new System.Drawing.Size(245, 521);
             this.lbDatabases.TabIndex = 7;
             this.lbDatabases.SelectedIndexChanged += new System.EventHandler(this.lbDatabases_SelectedIndexChanged);
             // 
             // panel1
             // 
-            this.panel1.BackColor = System.Drawing.SystemColors.Control;
+            this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
             this.panel1.Controls.Add(this.btnSelectAll);
             this.panel1.Controls.Add(this.btnDeselectAllDbs);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.panel1.Location = new System.Drawing.Point(5, 5);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(243, 31);
+            this.panel1.Size = new System.Drawing.Size(245, 31);
             this.panel1.TabIndex = 0;
             // 
             // btnSelectAll
             // 
             this.btnSelectAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSelectAll.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
+            this.btnSelectAll.FlatAppearance.BorderSize = 0;
+            this.btnSelectAll.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSelectAll.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnSelectAll.Location = new System.Drawing.Point(134, 3);
+            this.btnSelectAll.ForeColor = System.Drawing.Color.Gainsboro;
+            this.btnSelectAll.Location = new System.Drawing.Point(136, 3);
             this.btnSelectAll.Name = "btnSelectAll";
             this.btnSelectAll.Size = new System.Drawing.Size(106, 23);
             this.btnSelectAll.TabIndex = 7;
             this.btnSelectAll.Text = " select all";
-            this.btnSelectAll.UseVisualStyleBackColor = true;
+            this.btnSelectAll.UseVisualStyleBackColor = false;
             this.btnSelectAll.Visible = false;
             this.btnSelectAll.Click += new System.EventHandler(this.btnSelectAll_Click);
             // 
             // btnDeselectAllDbs
             // 
+            this.btnDeselectAllDbs.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
+            this.btnDeselectAllDbs.FlatAppearance.BorderSize = 0;
+            this.btnDeselectAllDbs.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnDeselectAllDbs.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnDeselectAllDbs.ForeColor = System.Drawing.Color.Gainsboro;
             this.btnDeselectAllDbs.Location = new System.Drawing.Point(3, 3);
             this.btnDeselectAllDbs.Name = "btnDeselectAllDbs";
             this.btnDeselectAllDbs.Size = new System.Drawing.Size(106, 23);
             this.btnDeselectAllDbs.TabIndex = 6;
             this.btnDeselectAllDbs.Text = " deselect all";
-            this.btnDeselectAllDbs.UseVisualStyleBackColor = true;
+            this.btnDeselectAllDbs.UseVisualStyleBackColor = false;
             this.btnDeselectAllDbs.Visible = false;
             this.btnDeselectAllDbs.Click += new System.EventHandler(this.btnDeselectAllDbs_Click);
             // 
@@ -265,15 +290,16 @@
             // 
             // tabSearch
             // 
+            this.tabSearch.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
             this.tabSearch.Controls.Add(this.pnlSearchControls);
             this.tabSearch.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tabSearch.ForeColor = System.Drawing.Color.Gainsboro;
             this.tabSearch.Location = new System.Drawing.Point(4, 22);
             this.tabSearch.Name = "tabSearch";
             this.tabSearch.Padding = new System.Windows.Forms.Padding(3);
             this.tabSearch.Size = new System.Drawing.Size(1003, 538);
             this.tabSearch.TabIndex = 0;
             this.tabSearch.Text = "Search";
-            this.tabSearch.UseVisualStyleBackColor = true;
             // 
             // pnlSearchControls
             // 
@@ -290,8 +316,11 @@
             // 
             // txtSearchResult
             // 
+            this.txtSearchResult.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
+            this.txtSearchResult.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.txtSearchResult.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtSearchResult.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtSearchResult.ForeColor = System.Drawing.Color.Gainsboro;
             this.txtSearchResult.Location = new System.Drawing.Point(0, 60);
             this.txtSearchResult.Name = "txtSearchResult";
             this.txtSearchResult.ReadOnly = true;
@@ -302,7 +331,7 @@
             // 
             // pnlSearcTabTop
             // 
-            this.pnlSearcTabTop.BackColor = System.Drawing.Color.Transparent;
+            this.pnlSearcTabTop.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
             this.pnlSearcTabTop.Controls.Add(this.chkText);
             this.pnlSearcTabTop.Controls.Add(this.label2);
             this.pnlSearcTabTop.Controls.Add(this.btnSearch);
@@ -337,19 +366,26 @@
             // 
             // btnSearch
             // 
+            this.btnSearch.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
             this.btnSearch.Enabled = false;
+            this.btnSearch.FlatAppearance.BorderSize = 0;
+            this.btnSearch.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSearch.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnSearch.ForeColor = System.Drawing.Color.Gainsboro;
             this.btnSearch.Location = new System.Drawing.Point(364, 22);
             this.btnSearch.Name = "btnSearch";
             this.btnSearch.Size = new System.Drawing.Size(84, 24);
             this.btnSearch.TabIndex = 2;
             this.btnSearch.Text = "search";
-            this.btnSearch.UseVisualStyleBackColor = true;
+            this.btnSearch.UseVisualStyleBackColor = false;
             this.btnSearch.Click += new System.EventHandler(this.btnSearch_Click);
             // 
             // txtSearch
             // 
+            this.txtSearch.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
+            this.txtSearch.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtSearch.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtSearch.ForeColor = System.Drawing.Color.Gainsboro;
             this.txtSearch.Location = new System.Drawing.Point(15, 25);
             this.txtSearch.Name = "txtSearch";
             this.txtSearch.Size = new System.Drawing.Size(343, 20);
@@ -358,21 +394,24 @@
             // 
             // tabCompare
             // 
+            this.tabCompare.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
             this.tabCompare.Controls.Add(this.txtComparResult);
             this.tabCompare.Controls.Add(this.panel4);
             this.tabCompare.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tabCompare.ForeColor = System.Drawing.Color.Gainsboro;
             this.tabCompare.Location = new System.Drawing.Point(4, 22);
             this.tabCompare.Name = "tabCompare";
             this.tabCompare.Padding = new System.Windows.Forms.Padding(3);
             this.tabCompare.Size = new System.Drawing.Size(1003, 538);
             this.tabCompare.TabIndex = 1;
             this.tabCompare.Text = "Compare";
-            this.tabCompare.UseVisualStyleBackColor = true;
             // 
             // txtComparResult
             // 
+            this.txtComparResult.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
             this.txtComparResult.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtComparResult.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtComparResult.ForeColor = System.Drawing.Color.Gainsboro;
             this.txtComparResult.Location = new System.Drawing.Point(3, 61);
             this.txtComparResult.Name = "txtComparResult";
             this.txtComparResult.ReadOnly = true;
@@ -461,9 +500,11 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
             this.ClientSize = new System.Drawing.Size(1276, 750);
             this.Controls.Add(this.splitMain);
             this.Controls.Add(this.pnlTop);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Main";
             this.Text = "Interrogator";
