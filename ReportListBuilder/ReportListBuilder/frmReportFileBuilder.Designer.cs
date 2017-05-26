@@ -1,4 +1,4 @@
-﻿namespace ReportListBuilder
+﻿namespace ReportFileBuilder
 {
     partial class frmReportFileBuilder
     {
@@ -33,6 +33,7 @@
             this.txtOutput = new System.Windows.Forms.TextBox();
             this.pnlControls = new System.Windows.Forms.Panel();
             this.grpControls = new System.Windows.Forms.GroupBox();
+            this.btnPreview = new System.Windows.Forms.Button();
             this.btnProcess = new System.Windows.Forms.Button();
             this.lblSaveLocation = new System.Windows.Forms.Label();
             this.txtSavePath = new System.Windows.Forms.TextBox();
@@ -41,7 +42,6 @@
             this.txtReportFileSourcePath = new System.Windows.Forms.TextBox();
             this.btnSourceFileSelect = new System.Windows.Forms.Button();
             this.dlgBrowseFolders = new System.Windows.Forms.FolderBrowserDialog();
-            this.btnPreview = new System.Windows.Forms.Button();
             this.pnlOutput.SuspendLayout();
             this.pnlControls.SuspendLayout();
             this.grpControls.SuspendLayout();
@@ -49,15 +49,17 @@
             // 
             // pnlOutput
             // 
+            this.pnlOutput.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.pnlOutput.Controls.Add(this.txtOutput);
             this.pnlOutput.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pnlOutput.Location = new System.Drawing.Point(0, 235);
+            this.pnlOutput.Location = new System.Drawing.Point(0, 244);
             this.pnlOutput.Name = "pnlOutput";
-            this.pnlOutput.Size = new System.Drawing.Size(1110, 496);
+            this.pnlOutput.Size = new System.Drawing.Size(1110, 183);
             this.pnlOutput.TabIndex = 0;
             // 
             // txtOutput
             // 
+            this.txtOutput.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.txtOutput.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtOutput.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.txtOutput.Location = new System.Drawing.Point(0, 0);
@@ -65,20 +67,26 @@
             this.txtOutput.Name = "txtOutput";
             this.txtOutput.ReadOnly = true;
             this.txtOutput.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtOutput.Size = new System.Drawing.Size(1110, 496);
+            this.txtOutput.Size = new System.Drawing.Size(1106, 179);
             this.txtOutput.TabIndex = 0;
             // 
             // pnlControls
             // 
+            this.pnlControls.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.pnlControls.Controls.Add(this.grpControls);
-            this.pnlControls.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlControls.Location = new System.Drawing.Point(0, 0);
+            this.pnlControls.MinimumSize = new System.Drawing.Size(1110, 236);
             this.pnlControls.Name = "pnlControls";
-            this.pnlControls.Size = new System.Drawing.Size(1110, 235);
+            this.pnlControls.Size = new System.Drawing.Size(1110, 236);
             this.pnlControls.TabIndex = 1;
             // 
             // grpControls
             // 
+            this.grpControls.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.grpControls.Controls.Add(this.btnPreview);
             this.grpControls.Controls.Add(this.btnProcess);
             this.grpControls.Controls.Add(this.lblSaveLocation);
@@ -88,11 +96,23 @@
             this.grpControls.Controls.Add(this.txtReportFileSourcePath);
             this.grpControls.Controls.Add(this.btnSourceFileSelect);
             this.grpControls.Location = new System.Drawing.Point(12, 12);
+            this.grpControls.MinimumSize = new System.Drawing.Size(1078, 184);
             this.grpControls.Name = "grpControls";
-            this.grpControls.Size = new System.Drawing.Size(1082, 187);
+            this.grpControls.Size = new System.Drawing.Size(1082, 188);
             this.grpControls.TabIndex = 0;
             this.grpControls.TabStop = false;
             this.grpControls.Text = "Report File Selector";
+            // 
+            // btnPreview
+            // 
+            this.btnPreview.Enabled = false;
+            this.btnPreview.Location = new System.Drawing.Point(898, 139);
+            this.btnPreview.Name = "btnPreview";
+            this.btnPreview.Size = new System.Drawing.Size(75, 23);
+            this.btnPreview.TabIndex = 7;
+            this.btnPreview.Text = "Preview";
+            this.btnPreview.UseVisualStyleBackColor = true;
+            this.btnPreview.Click += new System.EventHandler(this.btnPreview_Click);
             // 
             // btnProcess
             // 
@@ -159,25 +179,19 @@
             this.btnSourceFileSelect.UseVisualStyleBackColor = true;
             this.btnSourceFileSelect.Click += new System.EventHandler(this.btnSourceFileSelect_Click);
             // 
-            // btnPreview
+            // dlgBrowseFolders
             // 
-            this.btnPreview.Enabled = false;
-            this.btnPreview.Location = new System.Drawing.Point(898, 139);
-            this.btnPreview.Name = "btnPreview";
-            this.btnPreview.Size = new System.Drawing.Size(75, 23);
-            this.btnPreview.TabIndex = 7;
-            this.btnPreview.Text = "Preview";
-            this.btnPreview.UseVisualStyleBackColor = true;
-            this.btnPreview.Click += new System.EventHandler(this.btnPreview_Click);
+            this.dlgBrowseFolders.ShowNewFolderButton = false;
             // 
             // frmReportFileBuilder
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1110, 731);
+            this.ClientSize = new System.Drawing.Size(1110, 427);
             this.Controls.Add(this.pnlControls);
             this.Controls.Add(this.pnlOutput);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MinimumSize = new System.Drawing.Size(1126, 466);
             this.Name = "frmReportFileBuilder";
             this.Text = "Report File Builder";
             this.Load += new System.EventHandler(this.frmReportFileBuilder_Load);

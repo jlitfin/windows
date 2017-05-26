@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
 
-namespace ReportListBuilder
+namespace ReportFileBuilder
 {
     public partial class frmReportFileBuilder : Form
     {
@@ -26,6 +26,10 @@ namespace ReportListBuilder
                 using (var sr = new StreamReader(_settingsFileName))
                 {
                     _initPath = sr.ReadLine();
+                    if (!Directory.Exists(_initPath))
+                    {
+                        _initPath = string.Empty;
+                    }
                 }
             }
             Greet();
@@ -33,7 +37,7 @@ namespace ReportListBuilder
 
         private void btnSourceFileSelect_Click(object sender, EventArgs e)
         {
-            dlgBrowseFolders.SelectedPath = _initPath;
+            dlgBrowseFolders.SelectedPath = string.IsNullOrEmpty(_initPath) ? null : _initPath;
             dlgBrowseFolders.ShowDialog();
             txtReportFileSourcePath.Text = dlgBrowseFolders.SelectedPath;
 
@@ -41,7 +45,14 @@ namespace ReportListBuilder
 
             using (var sw = new StreamWriter(_settingsFileName))
             {
-                sw.WriteLine(txtReportFileSourcePath.Text);
+                try
+                {
+                    sw.WriteLine(txtReportFileSourcePath.Text);
+                }
+                catch
+                {
+                    // oh well, couldn't write the settings file where they ran it
+                }
             }
         }
 
@@ -114,7 +125,7 @@ namespace ReportListBuilder
             var destinationPath = GetDestinationPath();
 
             txtOutput.Clear();
-            txtOutput.AppendText("Processing Files ...");
+            txtOutput.AppendText("Processing Files.");
 
             using (var sw = new StreamWriter(destinationPath))
             {
@@ -126,7 +137,7 @@ namespace ReportListBuilder
             }
 
             txtOutput.AppendText(Environment.NewLine);
-            txtOutput.AppendText("Attempting to start excel ...");
+            txtOutput.AppendText("Starting excel.");
             try
             {
                 Process.Start(new ProcessStartInfo
@@ -135,6 +146,11 @@ namespace ReportListBuilder
                     Arguments = _destinationFileName,
                     WorkingDirectory = txtSavePath.Text
                 });
+
+                txtOutput.AppendText(Environment.NewLine);
+                txtOutput.AppendText("Please add additional mapping information and save file in xlxs format.");
+                txtOutput.AppendText(Environment.NewLine);
+                txtOutput.AppendText("Process complete.");
             }
             catch 
             {

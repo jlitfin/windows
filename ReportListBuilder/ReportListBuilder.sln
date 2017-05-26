@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReportListBuilder", "ReportListBuilder\ReportListBuilder.csproj", "{02D47896-2E65-472D-A03D-4F9205AB4A49}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReportFileBuilder", "ReportListBuilder\ReportFileBuilder.csproj", "{02D47896-2E65-472D-A03D-4F9205AB4A49}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
