@@ -504,10 +504,11 @@
             this.ClientSize = new System.Drawing.Size(1276, 750);
             this.Controls.Add(this.splitMain);
             this.Controls.Add(this.pnlTop);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Main";
             this.Text = "Interrogator";
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.Main_Load);
             this.pnlTop.ResumeLayout(false);
             this.pnlTop.PerformLayout();
