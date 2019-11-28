@@ -4,18 +4,20 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
+
+using Core;
 
 namespace UCI
 {
     public class Engine : IDisposable
     {
-        private const int SEARCH_TIME = 20000;
-        private const int SEARCH_DEPTH = 24;
-        private const int MULTI_PV = 3;
+        public const int SEARCH_DEPTH = 20;
+        private const int MULTI_PV = 1;
+        private const string BOOK = @"C:\Users\jlitfin\Documents\source\windows\Joocey\Resources\komodo.bin";
 
         private bool disposedValue = false;
-        private bool engineExit = false;
-        private object _lock = new Object();
+        private readonly object _lock = new Object();
         private Logger _log;
         private StreamWriter _stdIn;
         private State _state;
@@ -40,7 +42,7 @@ namespace UCI
             _log.Log("Connecting ..");
             _proc = new Process();
 
-            _proc.StartInfo.FileName = @"C:\Users\jlitfin\Documents\source\windows\Joocey\engines\stockfish_10_x32.exe";
+            _proc.StartInfo.FileName = @"C:\Users\jlitfin\Documents\source\windows\Joocey\engines\Stockfish_Polyglot_10_x64.exe";
             _proc.StartInfo.CreateNoWindow = true;
             _proc.StartInfo.UseShellExecute = false;
             _proc.StartInfo.RedirectStandardInput = true;
@@ -56,56 +58,94 @@ namespace UCI
             _proc.BeginErrorReadLine();
 
             _stdIn = _proc.StandardInput;
-            InitializeEngine(true);
             Push(UCICommands.Uci, UCIResponses.UciOk, new StateKeyValue { Key = StateKeys.Connected, Value = true });
+
+            InitializeEngine(true);
+            _state.Set(StateKeys.Connected, true);
+            
         }
 
-        public void InitializeEngine(bool debug = false)
+        private void InitializeEngine(bool debug = false)
         {
             _log.Log("Initializing ..");
+            SetOption(UCIOptions.BookFile, BOOK);
             SetOption(UCIOptions.UCI_AnalyseMode, "true");
             SetOption(UCIOptions.MultiPV, MULTI_PV);
-
+            Push(UCICommands.NewGame);
             _state.Set(StateKeys.Initialized, true);
         }
 
-        public void Eval()
+        public void Eval(string fen)
         {
-            Push(UCICommands.NewGame);
-            Push(UCICommands.Position + " startpos moves e2e4 c7c5 b1c3");
-
-            Search();
+            Eval(fen, null);
         }
 
-        public void Search()
+        public void Eval(string fen, string moves)
         {
-            Push($"go depth {SEARCH_DEPTH}", UCIResponses.BestMove);
+            Push($"{UCICommands.FromFen} {fen}");
+            Search(moves);
         }
 
-        private void BufferChanged()
+        private void Search(string moves = null)
         {
+            Push($"go depth {SEARCH_DEPTH} {(!string.IsNullOrEmpty(moves) ? UCICommands.SearchMoves : string.Empty)} {moves}", UCIResponses.BestMove);
+        }
+
+        public async Task<SearchResult> GetSearchResult()
+        {
+            var waiting = true;
             var buffer = (ConcurrentQueue<string>)_state.Get(StateKeys.Buffer);
-            while (buffer.TryDequeue(out string result))
+            var searchSession = new Stack<string>();
+
+            SearchResult retVal = null;
+            while (waiting)
             {
-                Console.WriteLine(result);
+                Send();
+                if (!buffer.IsEmpty)
+                {
+                    buffer.TryDequeue(out string result);
+                    if (!string.IsNullOrEmpty(result))
+                    {
+                        searchSession.Push(result);
+                        if (result.Contains(UCIResponses.BestMove))
+                        {
+                            retVal = new SearchResult
+                            {
+                                BestMove = searchSession.Pop(),
+                                Variations = new List<Variation>()
+                            };
+                            for (int i = 0; i < MULTI_PV; ++i)
+                            {
+                                if (searchSession.Any())
+                                {
+                                    retVal.Variations.Add(new Variation(searchSession.Pop()));
+                                }
+                                else
+                                {
+                                    break;
+                                }
+                            }
+                            waiting = false;
+                        }
+                    }
+                }
+                else if (retVal == null)
+                {
+                    await Task.Delay(1);
+                }
             }
+            return retVal;
         }
 
-        public void StateChanged(object sender, StateChangeEventArgs e)
+        private void StateChanged(object sender, StateChangeEventArgs e)
         {
             if (e.Keys.Contains(StateKeys.AwaitResponse) && e.Current[StateKeys.AwaitResponse] == null)
             {
                 Send();
             }
-
-            if (e.Keys.Contains(StateKeys.Buffer))
-            {
-                BufferChanged();
-            }
         }
 
-
-        public void DataReceived(object sender, DataReceivedEventArgs args)
+        private void DataReceived(object sender, DataReceivedEventArgs args)
         {
             _log.LogRecv(args.Data);
 
@@ -128,20 +168,18 @@ namespace UCI
             }
         }
 
-        public void ExitRecevied(object sender, EventArgs e)
+        private void ExitRecevied(object sender, EventArgs e)
         {
             _log.Log("Exit Received.");
             _proc.CancelOutputRead();
-
-            engineExit = true;
         }
 
-        public void ErrorReceived(object sender, DataReceivedEventArgs args)
+        private void ErrorReceived(object sender, DataReceivedEventArgs args)
         {
             _log.LogError(args.Data);
         }
 
-        public void Push(string command, string awaitReply = null, StateKeyValue setKey = null)
+        private void Push(string command, string awaitReply = null, StateKeyValue setKey = null)
         {
             lock (_lock)
             {
@@ -170,7 +208,7 @@ namespace UCI
             }
         }
 
-        public void SetOption(string option, string value)
+        private void SetOption(string option, string value)
         {
             lock (_lock)
             {
@@ -178,7 +216,7 @@ namespace UCI
             }
         }
 
-        public void SetOption(string option, int value)
+        private void SetOption(string option, int value)
         {
             SetOption(option, value.ToString());
         }

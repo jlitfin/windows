@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using Core;
+
 namespace Board
 {
     public abstract class Piece
@@ -43,7 +45,7 @@ namespace Board
             }
         }
 
-        public abstract List<Move> GenMoves(GameState board);
+        public abstract List<Ply> GenMoves(GameState board);
     }
 
     public class PieceFactory

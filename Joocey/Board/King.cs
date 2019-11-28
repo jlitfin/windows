@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+
+using Core;
 
 namespace Board
 {
@@ -8,9 +9,9 @@ namespace Board
     {
         public King(string identifier, SQ currentSquare) : base(identifier, currentSquare) { }
 
-        public override List<Move> GenMoves(GameState board)
+        public override List<Ply> GenMoves(GameState board)
         {
-            var moves = new List<Move>();
+            var moves = new List<Ply>();
             var vectors = new List<Vector>
             {
                 { new Vector( 1, 0) },
@@ -31,9 +32,10 @@ namespace Board
                     var capture = !empty && board[bi.Square].Side != Side;
                     if (empty || capture)
                     {
-                        moves.Add(new Move
+                        moves.Add(new Ply
                         {
                             Piece = this,
+                            Origin = CurrentSquare,
                             Destination = bi.Square,
                             IsCapture = capture
                         });
@@ -48,17 +50,19 @@ namespace Board
                 var status = board.CastlingStatus;
                 if (board.CastlingStatus.Contains("Q"))
                 {
-                    moves.Add(new Move
+                    moves.Add(new Ply
                     {
                         Piece = this,
+                        Origin = CurrentSquare,
                         Destination = SQ.c1,
                         IsCastle = true,
                         IsPromotion = false,
                         IsCapture = false
                     });
-                    moves.Add(new Move
+                    moves.Add(new Ply
                     {
                         Piece = board[SQ.a1],
+                        Origin = SQ.a1,
                         Destination = SQ.d1,
                         IsCastle = true,
                         IsPromotion = false,
@@ -68,17 +72,19 @@ namespace Board
 
                 if (board.CastlingStatus.Contains("K"))
                 {
-                    moves.Add(new Move
+                    moves.Add(new Ply
                     {
                         Piece = this,
+                        Origin = CurrentSquare,
                         Destination = SQ.g1,
                         IsCastle = true,
                         IsPromotion = false,
                         IsCapture = false
                     });
-                    moves.Add(new Move
+                    moves.Add(new Ply
                     {
                         Piece = board[SQ.h1],
+                        Origin = SQ.h1,
                         Destination = SQ.f1,
                         IsCastle = true,
                         IsPromotion = false,
@@ -90,17 +96,19 @@ namespace Board
             {
                 if (board.CastlingStatus.Contains("q"))
                 {
-                    moves.Add(new Move
+                    moves.Add(new Ply
                     {
                         Piece = this,
+                        Origin = CurrentSquare,
                         Destination = SQ.c8,
                         IsCastle = true,
                         IsPromotion = false,
                         IsCapture = false
                     });
-                    moves.Add(new Move
+                    moves.Add(new Ply
                     {
                         Piece = board[SQ.a8],
+                        Origin = SQ.a8,
                         Destination = SQ.d8,
                         IsCastle = true,
                         IsPromotion = false,
@@ -109,17 +117,19 @@ namespace Board
                 }
                 if (board.CastlingStatus.Contains("k"))
                 {
-                    moves.Add(new Move
+                    moves.Add(new Ply
                     {
                         Piece = this,
+                        Origin = CurrentSquare,
                         Destination = SQ.g8,
                         IsCastle = true,
                         IsPromotion = false,
                         IsCapture = false
                     });
-                    moves.Add(new Move
+                    moves.Add(new Ply
                     {
                         Piece = board[SQ.h8],
+                        Origin = SQ.h8,
                         Destination = SQ.f8,
                         IsCastle = true,
                         IsPromotion = false,

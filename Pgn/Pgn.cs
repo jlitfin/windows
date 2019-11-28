@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 
-using Board;
+using Core;
 
 namespace Pgn
 {
@@ -10,20 +10,23 @@ namespace Pgn
     {
         private string _source;
         private string[] _lines;
-        private Board.GameState _board;
 
         public static readonly HashSet<string> HeaderKeys = new HashSet<string>(new string[]
         {
-        "Event",
-        "Site",
-        "Date",
-        "Round",
-        "White",
-        "Black",
-        "Result"
+            "Event",
+            "Site",
+            "Date",
+            "Round",
+            "White",
+            "Black",
+            "Result"
         });
+
         public Dictionary<string, string> Headers { get; set; }
-        public List<Ply> MoveList { get; set; }
+
+        public int Id { get; set; }
+
+        public List<Move> MoveList { get; set; }
 
         public string GetMoveListString()
         {
@@ -34,14 +37,10 @@ namespace Pgn
             return string.Empty;
         }
 
-
         public Pgn(string source)
         {
             _source = source;
             Parse();
-
-            _board = new Board.GameState();
-            _board.StartPosition();
         }
 
         private void Parse()
@@ -77,8 +76,8 @@ namespace Pgn
 
         private void ParseMoveListString(int startingLineNumber)
         {
-            MoveList = new List<Ply>();
-            var currentMove = new Ply { MoveNumber = 0 };
+            MoveList = new List<Move>();
+            var currentMove = new Move { MoveNumber = 0 };
             var currentToken = 0;
             for (int i = startingLineNumber; i < _lines.Length; ++i)
             {
@@ -100,12 +99,12 @@ namespace Pgn
                     var token = line.Substring(ndx, edx - ndx);
                     j = edx;
 
-                    if (!string.IsNullOrEmpty(token))
+                    if (!string.IsNullOrEmpty(token) && !PgnReader.ResultOptions.Contains(token.Trim()))
                     {
                         switch (currentToken)
                         {
                             case 0:
-                                currentMove = new Ply { MoveNumber = currentMove.MoveNumber + 1 };
+                                currentMove = new Move { MoveNumber = currentMove.MoveNumber + 1 };
                                 ++currentToken;
                                 break;
                             case 1:
@@ -151,6 +150,42 @@ namespace Pgn
                 ++i;
             }
             return i;
+        }
+
+        public int Code
+        {
+            get
+            {
+                var w = Headers.ContainsKey("White")  ? Headers["White"]  : string.Empty;
+                var b = Headers.ContainsKey("Black")  ? Headers["Black"]  : string.Empty;
+                var d = Headers.ContainsKey("Date")   ? Headers["Date"]   : string.Empty;
+                var r = Headers.ContainsKey("Result") ? Headers["Result"] : string.Empty;
+                var m = GetMoveListString();
+                var str = $"{w}|{b}|{d}|{r}|{m}";
+
+                unchecked
+                {
+                    int hash1 = (5381 << 16) + 5381;
+                    int hash2 = hash1;
+
+                    for (int i = 0; i < str.Length; i += 2)
+                    {
+                        hash1 = ((hash1 << 5) + hash1) ^ str[i];
+                        if (i == str.Length - 1)
+                            break;
+                        hash2 = ((hash2 << 5) + hash2) ^ str[i + 1];
+                    }
+                    return hash1 + (hash2 * 1566083941);
+                }
+            }
+        }
+
+        public string Source
+        {
+            get
+            {
+                return _source;
+            }
         }
     }
 }

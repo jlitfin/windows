@@ -12,7 +12,7 @@ namespace UCI
         {
             if (!string.IsNullOrEmpty(logFile))
             {
-                _log = new StreamWriter(logFile);
+                _log = new StreamWriter(logFile, true);
             }
         }
 

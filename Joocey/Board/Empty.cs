@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+
+using Core;
 
 namespace Board
 {
@@ -11,9 +12,9 @@ namespace Board
             Side = Side.Empty;
         }
 
-        public override List<Move> GenMoves(GameState board)
+        public override List<Ply> GenMoves(GameState board)
         {
-            return new List<Move>();
+            return new List<Ply>();
         }
     }
 }

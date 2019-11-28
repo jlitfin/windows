@@ -25,6 +25,7 @@ namespace UCI
         public const string SyzygyProbeDepth = "SyzygyProbeDepth";
         public const string Syzygy50MoveRule = "Syzygy50MoveRule";
         public const string SyzygyProbeLimit = "SyzygyProbeLimit";
+        public const string BookFile = "BookFile";
 
     }
 }

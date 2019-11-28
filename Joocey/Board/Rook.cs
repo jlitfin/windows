@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+
+using Core;
 
 namespace Board
 {
@@ -8,9 +9,9 @@ namespace Board
     {
         public Rook(string identifier, SQ currentSquare) : base(identifier, currentSquare) { }
 
-        public override List<Move> GenMoves(GameState board)
+        public override List<Ply> GenMoves(GameState board)
         {
-            var moves = new List<Move>();
+            var moves = new List<Ply>();
             var vectors = new List<Vector>
             {
                 { new Vector( 1, 0) },
@@ -27,9 +28,10 @@ namespace Board
                     var capture = !empty && board[bi.Square].Side != Side;
                     if (empty || capture)
                     {
-                        moves.Add(new Move
+                        moves.Add(new Ply
                         {
                             Piece = this,
+                            Origin = CurrentSquare,
                             Destination = bi.Square,
                             IsCapture = capture
                         });

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+
+using Core;
 
 namespace Board
 {
@@ -8,9 +9,9 @@ namespace Board
     {
         public Pawn(string identifier, SQ currentSquare) : base(identifier, currentSquare) { }
 
-        public override List<Move> GenMoves(GameState board)
+        public override List<Ply> GenMoves(GameState board)
         {
-            var moves = new List<Move>();
+            var moves = new List<Ply>();
             var increment = Side == Side.White ? 1 : -1;
             var homeRank = Side == Side.White ? 2 : 7;
             var promoteRank = Side == Side.White ? 8 : 1;
@@ -23,30 +24,34 @@ namespace Board
             {
                 if (board.BoardIndeces[bi.Square].Rank == promoteRank)
                 {
-                    moves.Add(new Move
+                    moves.Add(new Ply
                     {
                         Piece = this,
+                        Origin = CurrentSquare,
                         Destination = bi.Square,
                         IsPromotion = true,
                         PromotionPiece = new Queen(Side == Side.White ? "Q" : "q", bi.Square)
                     });
-                    moves.Add(new Move
+                    moves.Add(new Ply
                     {
                         Piece = this,
+                        Origin = CurrentSquare,
                         Destination = bi.Square,
                         IsPromotion = true,
                         PromotionPiece = new Rook(Side == Side.White ? "R" : "r", bi.Square)
                     });
-                    moves.Add(new Move
+                    moves.Add(new Ply
                     {
                         Piece = this,
+                        Origin = CurrentSquare,
                         Destination = bi.Square,
                         IsPromotion = true,
                         PromotionPiece = new Bishop(Side == Side.White ? "B" : "b", bi.Square)
                     });
-                    moves.Add(new Move
+                    moves.Add(new Ply
                     {
                         Piece = this,
+                        Origin = CurrentSquare,
                         Destination = bi.Square,
                         IsPromotion = true,
                         PromotionPiece = new Knight(Side == Side.White ? "N" : "n", bi.Square)
@@ -54,9 +59,10 @@ namespace Board
                 }
                 else
                 {
-                    moves.Add(new Move
+                    moves.Add(new Ply
                     {
                         Piece = this,
+                        Origin = CurrentSquare,
                         Destination = bi.Square
                     });
                 }
@@ -70,9 +76,10 @@ namespace Board
                 {
                     if (bi.Add(v).Square != SQ.xx && board[bi.Square].Side == Side.Empty)
                     {
-                        moves.Add(new Move
+                        moves.Add(new Ply
                         {
                             Piece = this,
+                            Origin = CurrentSquare,
                             Destination = bi.Square
                         });
                     }
@@ -87,33 +94,37 @@ namespace Board
                 {
                     if (board.BoardIndeces[bi.Square].Rank == promoteRank)
                     {
-                        moves.Add(new Move
+                        moves.Add(new Ply
                         {
                             Piece = this,
+                            Origin = CurrentSquare,
                             Destination = bi.Square,
                             IsCapture = true,
                             IsPromotion = true,
                             PromotionPiece = new Queen(Side == Side.White ? "Q" : "q", bi.Square)
                         });
-                        moves.Add(new Move
+                        moves.Add(new Ply
                         {
                             Piece = this,
+                            Origin = CurrentSquare,
                             Destination = bi.Square,
                             IsCapture = true,
                             IsPromotion = true,
                             PromotionPiece = new Rook(Side == Side.White ? "R" : "r", bi.Square)
                         });
-                        moves.Add(new Move
+                        moves.Add(new Ply
                         {
                             Piece = this,
+                            Origin = CurrentSquare,
                             Destination = bi.Square,
                             IsCapture = true,
                             IsPromotion = true,
                             PromotionPiece = new Bishop(Side == Side.White ? "B" : "b", bi.Square)
                         });
-                        moves.Add(new Move
+                        moves.Add(new Ply
                         {
                             Piece = this,
+                            Origin = CurrentSquare,
                             Destination = bi.Square,
                             IsCapture = true,
                             IsPromotion = true,
@@ -122,9 +133,10 @@ namespace Board
                     }
                     else
                     {
-                        moves.Add(new Move
+                        moves.Add(new Ply
                         {
                             Piece = this,
+                            Origin = CurrentSquare,
                             Destination = bi.Square,
                             IsCapture = true
                         });
