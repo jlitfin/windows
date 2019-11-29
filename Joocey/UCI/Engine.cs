@@ -61,18 +61,29 @@ namespace UCI
             Push(UCICommands.Uci, UCIResponses.UciOk, new StateKeyValue { Key = StateKeys.Connected, Value = true });
 
             InitializeEngine(true);
-            _state.Set(StateKeys.Connected, true);
-            
+            _state.Set(StateKeys.Initialized, true);
+
+            if (!string.IsNullOrEmpty(BOOK))
+            {
+                LoadBook();
+            }
+            Wait();
+            Push(UCICommands.NewGame);
+        }
+
+        private void LoadBook()
+        {
+            SetOption(UCIOptions.StockFish_OwnBook, "true");
+            SetOption(UCIOptions.StockFish_BestBookMove, "true");
+
+            Push($"setoption name BookFile value {BOOK}", UCIResponses.BookLoaded);
         }
 
         private void InitializeEngine(bool debug = false)
         {
             _log.Log("Initializing ..");
-            SetOption(UCIOptions.BookFile, BOOK);
             SetOption(UCIOptions.UCI_AnalyseMode, "true");
             SetOption(UCIOptions.MultiPV, MULTI_PV);
-            Push(UCICommands.NewGame);
-            _state.Set(StateKeys.Initialized, true);
         }
 
         public void Eval(string fen)
@@ -137,6 +148,15 @@ namespace UCI
             return retVal;
         }
 
+        private void Push(string command, string awaitReply = null, StateKeyValue setKey = null)
+        {
+            lock (_lock)
+            {
+                _sendq.Enqueue(new UCICommand { Command = command, Reply = awaitReply });
+                _sendq.Enqueue(new UCICommand { Command = UCICommands.Ready, Reply = UCIResponses.ReadyOk, SetKey = setKey });
+            }
+        }
+
         private void StateChanged(object sender, StateChangeEventArgs e)
         {
             if (e.Keys.Contains(StateKeys.AwaitResponse) && e.Current[StateKeys.AwaitResponse] == null)
@@ -150,7 +170,7 @@ namespace UCI
             _log.LogRecv(args.Data);
 
             var awaiting = _state.Get(StateKeys.AwaitResponse) as string;
-            if (awaiting != null)
+            if (awaiting != null && args.Data != null)
             {
                 if (args.Data.StartsWith(awaiting))
                 {
@@ -179,13 +199,14 @@ namespace UCI
             _log.LogError(args.Data);
         }
 
-        private void Push(string command, string awaitReply = null, StateKeyValue setKey = null)
+        private void Quit()
         {
             lock (_lock)
             {
-                _sendq.Enqueue(new UCICommand { Command = command, Reply = awaitReply });
-                _sendq.Enqueue(new UCICommand { Command = UCICommands.Ready, Reply = UCIResponses.ReadyOk, SetKey = setKey });
+                _sendq.Enqueue(new UCICommand { Command = UCICommands.Stop });
+                _sendq.Enqueue(new UCICommand { Command = UCICommands.Quit });
             }
+            Wait();
         }
 
         private void Send()
@@ -208,6 +229,14 @@ namespace UCI
             }
         }
 
+        private void Wait()
+        {
+            while (_sendq.Any())
+            {
+                Send();
+            }
+        }
+
         private void SetOption(string option, string value)
         {
             lock (_lock)
@@ -227,9 +256,14 @@ namespace UCI
             {
                 if (disposing)
                 {
+                    Quit();
 
-                    _stdIn.WriteLine(UCICommands.Quit);
                     _proc.WaitForExit();
+
+                    _proc.OutputDataReceived -= DataReceived;
+                    _proc.ErrorDataReceived -= ErrorReceived;
+                    _proc.Exited -= ExitRecevied;
+                    _proc.Dispose();
 
                     _log?.Dispose();
                 }

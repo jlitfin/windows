@@ -14,6 +14,7 @@ namespace UCI
         public const string Ready = "isready";
         public const string Search = "go";
         public const string SearchMoves = "searchmoves";
+        public const string Stop = "stop";
         public const string Uci = "uci";
     }
 }

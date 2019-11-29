@@ -147,6 +147,7 @@ namespace Board
 
                     moveNumber++;
                 }
+                
             }
             return history;
         }

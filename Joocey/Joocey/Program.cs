@@ -31,7 +31,7 @@ namespace Joocey
             //Console.ReadKey();
             //return;
             var player = "iojedi";
-            var filePath = @"C:\Users\jlitfin\Desktop\lichess_iojedi_2019-11-20.pgn";
+            var filePath = @"C:\Users\jlitfin\Desktop\sample.pgn";
             var reader = new PgnReader(filePath);
             var gameCount = 0;
             Console.WriteLine($"Processing games from {filePath}");
