@@ -1,0 +1,22 @@
+ 
+	
+	
+	public void Log(string msg)
+	{
+		$"[{DateTime.Now.ToString("hh:mm:ss")}] INF: {msg}".Dump();
+	}
+	
+	public void LogSend(string msg)
+	{
+		$"[{DateTime.Now.ToString("hh:mm:ss")}] SND: {msg}".Dump();
+	}
+	
+	public void LogRecv(string msg)
+	{
+		$"[{DateTime.Now.ToString("hh:mm:ss")}] RCV: {msg}".Dump();
+	}
+
+	public void LogError(string msg)
+	{
+		$"[{DateTime.Now.ToString("hh:mm:ss")}] ERR: {msg}".Dump();
+	}
